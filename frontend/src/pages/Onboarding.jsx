@@ -21,7 +21,7 @@ export default function Onboarding() {
 
     return (
         <div className="auth-container">
-            <h1 className="auth-title">Welcome to Cal Clone</h1>
+            <h1 className="auth-title">Welcome to Meeting Scheduler</h1>
             <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem' }}>
                 We just need a few details to get you started.
             </p>

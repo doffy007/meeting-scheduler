@@ -1,0 +1,906 @@
+{
+	"info": {
+		"_postman_id": "1d952090-ca73-4a2c-aed6-a3393205dd46",
+		"name": "Meeting Scheduler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31139961"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"parlan\",\r\n  \"username\": \"parlan\",\r\n  \"password\": \"StrongPassword123!\",\r\n  \"email\": \"parlan@example.com\",\r\n  \"bio\": \"Backend engineer yang sedang belajar fullstack.\",\r\n  \"role\": \"admin\",\r\n  \"gender\": \"male\",\r\n  \"country_code\": \"+62\",\r\n  \"phone_number\": \"81234567890\",\r\n  \"location\": \"Jakarta, Indonesia\",\r\n  \"nationality\": \"Indonesian\",\r\n  \"national_id_number\": \"3275012401990001\",\r\n  \"language\": \"id\",\r\n  \"birthdate\": \"1999-01-24\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODIzNDc4LCJleHAiOjE3NjQ0MjgyNzgsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.INtuqcCLTi-IgPoP_zwruppu4H3yMdfzN1AOv8Pe_Vpz9BOyr63wWKnnnlB9fg2XSdpcFEqtf-vKX0p4ax5AclVXoo2BVv_nx7FPnX1fT-ZPTpjKe1PVK7ikfWjj7I8Vx-u1D5eT4LRFFcqgwtxGbMKzsRjYHwEy9_XZfZIL8RUom4l-LVPZbfsQkExie5Pbe0LXDKBrTu0qChxgQsGRMmkLuRq8RFUl2KjBIqElPUWcGTgoWYfupM8eMhgmBTHEkKMWVdTMGlGK74l2FIYrETEjgJybkLo1GekEdbJNVKr7rPC9X79V6wu_lUM6-cPPAsm_IiTFO1PuHA6GZAEgrA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"parlan\",\r\n  \"username\": \"parlan\",\r\n  \"password\": \"StrongPassword123!\",\r\n  \"email\": \"parlan@example.com\",\r\n  \"bio\": \"Backend engineer yang sedang belajar fullstack.\",\r\n  \"role\": \"admin\",\r\n  \"gender\": \"male\",\r\n  \"country_code\": \"+62\",\r\n  \"phone_number\": \"81234567890\",\r\n  \"location\": \"Jakarta, Indonesia\",\r\n  \"nationality\": \"Indonesian\",\r\n  \"national_id_number\": \"3275012401990001\",\r\n  \"language\": \"id\",\r\n  \"birthdate\": \"1999-01-24\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users/43669849-48ef-4552-86c3-ac4771a5d806",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"43669849-48ef-4552-86c3-ac4771a5d806"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODIzNDc4LCJleHAiOjE3NjQ0MjgyNzgsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.INtuqcCLTi-IgPoP_zwruppu4H3yMdfzN1AOv8Pe_Vpz9BOyr63wWKnnnlB9fg2XSdpcFEqtf-vKX0p4ax5AclVXoo2BVv_nx7FPnX1fT-ZPTpjKe1PVK7ikfWjj7I8Vx-u1D5eT4LRFFcqgwtxGbMKzsRjYHwEy9_XZfZIL8RUom4l-LVPZbfsQkExie5Pbe0LXDKBrTu0qChxgQsGRMmkLuRq8RFUl2KjBIqElPUWcGTgoWYfupM8eMhgmBTHEkKMWVdTMGlGK74l2FIYrETEjgJybkLo1GekEdbJNVKr7rPC9X79V6wu_lUM6-cPPAsm_IiTFO1PuHA6GZAEgrA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bio\": \"Test Jadi fullstack.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users/43669849-48ef-4552-86c3-ac4771a5d806",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"43669849-48ef-4552-86c3-ac4771a5d806"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODIzNDc4LCJleHAiOjE3NjQ0MjgyNzgsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.INtuqcCLTi-IgPoP_zwruppu4H3yMdfzN1AOv8Pe_Vpz9BOyr63wWKnnnlB9fg2XSdpcFEqtf-vKX0p4ax5AclVXoo2BVv_nx7FPnX1fT-ZPTpjKe1PVK7ikfWjj7I8Vx-u1D5eT4LRFFcqgwtxGbMKzsRjYHwEy9_XZfZIL8RUom4l-LVPZbfsQkExie5Pbe0LXDKBrTu0qChxgQsGRMmkLuRq8RFUl2KjBIqElPUWcGTgoWYfupM8eMhgmBTHEkKMWVdTMGlGK74l2FIYrETEjgJybkLo1GekEdbJNVKr7rPC9X79V6wu_lUM6-cPPAsm_IiTFO1PuHA6GZAEgrA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/users/43669849-48ef-4552-86c3-ac4771a5d806",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"43669849-48ef-4552-86c3-ac4771a5d806"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "SignIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"parlan\",\r\n    \"password\": \"StrongPassword123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "yJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODM0NzM1LCJleHAiOjE3NjQ0Mzk1MzUsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.D2gemc1Yki_kHU6pqnjgaini30B3wcuizKMw2anEgql-hUsB3iMLQDlRl2kNKEwh3YsevyyJ_DZluAHWLJ9hRr5xlXU066_zuGL_yUfkXoqQmNghDaBsDOVLJ0REXW_j9LgiI8GETKLv3fn9Oz7OzmLWHta5645VsneN0bm22Q4UQMJGzT_lUgIzX7jxJmFz75x0XWGLNZ2tHlCvbUcsutq22d81tAvmYiEaifCF8dl3zpWOlXldWYQAPPv6r3zn8ptxVHy8MMf360Gxu1G1qrMz_kbZ-nOk6nDX66PnWzZbG8FNQ019N0usso_2W2x5hQPNslRTfEniR_6EqYv2tQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/users/me",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignOut",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODgxMTcwLCJleHAiOjE3NjQ0ODU5NzAsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.GB-rt6X8gb1J_UoKGvwuCV6oUBpAdH2yE93eog-CBto2v94_UsUTkBhcpzcX5qU8y2L4ujl4JKBDzBcEZEpDUy0cOmL6KEVYFHqmv2zb6BzWilCfjwDGUjP-IouwidBJSmSTWdGjqPLhZa3gomzSgP-W8bV8JcNkKmIJ1_j97-O3Vnbo5rqwJecKBCYectkr8QYh42s2tY-Vju-RV3d5aHgruT8FtwYjgJyiVoKWnxtIf5hExPjw8h15TYd9PGpOQJr8DR19YJA2cso-mbmNe0USgiDenyDk-xe2Lwopx_OmDLsmeGJZgQg5rPLWjcSc2ut8km_8BycvrJZyn6rd1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/users/signout",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODM0NzM1LCJleHAiOjE3NjQ0Mzk1MzUsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.D2gemc1Yki_kHU6pqnjgaini30B3wcuizKMw2anEgql-hUsB3iMLQDlRl2kNKEwh3YsevyyJ_DZluAHWLJ9hRr5xlXU066_zuGL_yUfkXoqQmNghDaBsDOVLJ0REXW_j9LgiI8GETKLv3fn9Oz7OzmLWHta5645VsneN0bm22Q4UQMJGzT_lUgIzX7jxJmFz75x0XWGLNZ2tHlCvbUcsutq22d81tAvmYiEaifCF8dl3zpWOlXldWYQAPPv6r3zn8ptxVHy8MMf360Gxu1G1qrMz_kbZ-nOk6nDX66PnWzZbG8FNQ019N0usso_2W2x5hQPNslRTfEniR_6EqYv2tQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/users/verify",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Organizer",
+			"item": [
+				{
+					"name": "Public",
+					"item": [
+						{
+							"name": "Get List Organizers",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODIyMDQ2LCJleHAiOjE3NjQ0MjY4NDYsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.Uks7Vs3bFexSPhJ2BmYrkiLr9UhyNHai6_9l-_HF7JPKaPIFzg4wW3bC5iQK80gH7YvFVCX7_5BaLHVy3JrmKmwz9xKurZMiDPwW2jF2DC6uXXdOQe0t4Hs9i60LGvJvOUtO4XoJ3kRyzZShi2oDVddA6XB5PeX1bcgxY7FtahXgd_F2Gor6oT9mlH8VEzFEMY4tAoUXIi3D6-9hH36kj3LQn0SJeCEVTWMDZzcgeRdPueUhTDwCj1PsjwB2x_UEaMlSQwlu_1Eatt6RShMpo6IK45zgMue30xhoB4MJkH4D7J9mOjqZ_-FpOp7eZOMXSWGTg4QWhB69D5NATt6c-A",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/public-organizer?search=parlan",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-organizer"
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "name:eq:bejo",
+											"disabled": true
+										},
+										{
+											"key": "filter",
+											"value": "organizer_id:eq:497edcc7-1fb8-4fee-a64a-dd506562a326",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "parlan"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail Organizer",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/public-organizer/497edcc7-1fb8-4fee-a64a-dd506562a326",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-organizer",
+										"497edcc7-1fb8-4fee-a64a-dd506562a326"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Booking (organizer id)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODczMTIxLCJleHAiOjE3NjQ0Nzc5MjEsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.U5arcaQZvrBeyP0DCHWqeZc0n7TorUrRO6DMqvprqA_uofpMVL7758py4zzrIGCCPYuNkc3Axf3VAzyBXAR4EFGAoes1-pMpuKdJ_KMFYRLJUE7YrHCTg83Cl2u8o41J97jDqZuIoukXGMR484WDhnwrGmkByayT41FaJcEZZlFEfOxS1dByCrTXAqExkU03RtCdYBJC2kptlodmzDQ0ZX_2k2iXERmKvi63uV9wu9G-KAIqhvolzefMac-TkPZNL5Gvnvr9P59TL1W0pM1CAJuPDMXa4iaRe3yUbD-KOZhFqT9aXweSu8eIP8MBoyAWQTsgmdYOkEEWMpiXTIYu9g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/public-booking/organizers/497edcc7-1fb8-4fee-a64a-dd506562a326",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-booking",
+										"organizers",
+										"497edcc7-1fb8-4fee-a64a-dd506562a326"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Availability",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODczMTIxLCJleHAiOjE3NjQ0Nzc5MjEsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.U5arcaQZvrBeyP0DCHWqeZc0n7TorUrRO6DMqvprqA_uofpMVL7758py4zzrIGCCPYuNkc3Axf3VAzyBXAR4EFGAoes1-pMpuKdJ_KMFYRLJUE7YrHCTg83Cl2u8o41J97jDqZuIoukXGMR484WDhnwrGmkByayT41FaJcEZZlFEfOxS1dByCrTXAqExkU03RtCdYBJC2kptlodmzDQ0ZX_2k2iXERmKvi63uV9wu9G-KAIqhvolzefMac-TkPZNL5Gvnvr9P59TL1W0pM1CAJuPDMXa4iaRe3yUbD-KOZhFqT9aXweSu8eIP8MBoyAWQTsgmdYOkEEWMpiXTIYu9g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/public-booking/organizers/497edcc7-1fb8-4fee-a64a-dd506562a326/availability",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-booking",
+										"organizers",
+										"497edcc7-1fb8-4fee-a64a-dd506562a326",
+										"availability"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Booking",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"invitee_name\": \"Jane Doe\",\r\n  \"invitee_email\": \"jane@example.com\",\r\n  \"start_time\": \"2025-12-03T10:00:00+07:00\",\r\n  \"invitee_timezone\": \"Asia/Jakarta\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:3000/public-booking/organizers/497edcc7-1fb8-4fee-a64a-dd506562a326/bookings",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-booking",
+										"organizers",
+										"497edcc7-1fb8-4fee-a64a-dd506562a326",
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail Booking",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/public-booking/bookings/97c25ea5-c812-4ae2-a461-acc9e9d2ece6",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"public-booking",
+										"bookings",
+										"97c25ea5-c812-4ae2-a461-acc9e9d2ece6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get List Booking",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Detail Organizer",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/organizers/497edcc7-1fb8-4fee-a64a-dd506562a326",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organizers",
+								"497edcc7-1fb8-4fee-a64a-dd506562a326"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Organizer By User Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODIzNDc4LCJleHAiOjE3NjQ0MjgyNzgsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.INtuqcCLTi-IgPoP_zwruppu4H3yMdfzN1AOv8Pe_Vpz9BOyr63wWKnnnlB9fg2XSdpcFEqtf-vKX0p4ax5AclVXoo2BVv_nx7FPnX1fT-ZPTpjKe1PVK7ikfWjj7I8Vx-u1D5eT4LRFFcqgwtxGbMKzsRjYHwEy9_XZfZIL8RUom4l-LVPZbfsQkExie5Pbe0LXDKBrTu0qChxgQsGRMmkLuRq8RFUl2KjBIqElPUWcGTgoWYfupM8eMhgmBTHEkKMWVdTMGlGK74l2FIYrETEjgJybkLo1GekEdbJNVKr7rPC9X79V6wu_lUM6-cPPAsm_IiTFO1PuHA6GZAEgrA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/organizers/users/43669849-48ef-4552-86c3-ac4771a5d806",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organizers",
+								"users",
+								"43669849-48ef-4552-86c3-ac4771a5d806"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Organizer Settings",
+			"item": [
+				{
+					"name": "Post Settings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODI4MTU1LCJleHAiOjE3NjQ0MzI5NTUsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.mpMoBRQ7OSRfRp1PMnfcZ6j3jBPhv1lwbDektpOTLZonUPhjuWvKUsLMxyTNMMB9GaSDAEZV57FjkV998-zlj3fB7KUPwTzEGn-99rNi2PTJV65JLOocRTrryXUbMDXa_BC89Kkmur-HbqIAMk4bit71WgqM7WrwixMQrOxyYLpmiDqn_2M8d_C6UMY6wzbe54B9iCIGc58vOY4l3o7pFuibHupWT68aPl6gYMTispG51hb2liojZNKJECx5J90G-t705_xBfGcTBGi8kwiUWa5UwMfC90Q8E38b6kI9o8KhxMJJO7p5jTzfScHiMsJ6E0IB2QFTaX-Ke7K0uG5Jng",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"working_hours\": [\r\n    { \"day\": 1, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 2, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 3, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 4, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 5, \"start\": \"09:00\", \"end\": \"17:00\" }\r\n  ],\r\n  \"meeting_duration\": 30,\r\n  \"buffer_before\": 10,\r\n  \"buffer_after\": 10,\r\n  \"min_notice_minutes\": 60,\r\n  \"blackout_dates\": [\r\n    \"2025-11-25\",\r\n    \"2025-12-01\"\r\n  ],\r\n  \"timezone\": \"Asia/Jakarta\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/organizer-settings/497edcc7-1fb8-4fee-a64a-dd506562a326",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organizer-settings",
+								"497edcc7-1fb8-4fee-a64a-dd506562a326"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxOWRhNzdiLTUxZjMtNDIwYi05OTExLWYyOGNmY2Q1ODA2NiIsInVzZXJuYW1lIjoic3VwYW5nYXQiLCJpYXQiOjE3NjM5MTI3MjEsImV4cCI6MTc2NDUxNzUyMSwiaXNzIjoibWVldGluZ19zY2hlZHVsZXIifQ.siTT35N8rOYXYTomHIlIxk7RArUGaIXiavm9sk_Sa-m5sycK6zd_6eoDpqfJXuxKiHQxFe1q0_eNBkShO12lcp9nydlhGlda5flq3-iVl0_IkiGIXBKMLOx9nahov9sWSQ4bWO8-EcuyL1GQgG88ECycJH8V3lRXHVF4L70m75O0zQXr6WnrXZTLzpkW3-B0Lph6wmFdWT2h7GeZxZFr4UbyGNAThEZP2l0n533vKJXT89ON7b3_0EM5zhXGGPE_3WyhAQ4YFYETIqcuwbad91ZnUFlx-op0A_si-V0cbInXkJYUK7CjV_Lr4NbbM16EhfvsrvAfKNgyWHI5ivUcsg"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Content-Length",
+								"value": "0"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost:5173"
+							},
+							{
+								"key": "Referer",
+								"value": "http://localhost:5173/"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"Windows\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"working_hours\": [\r\n    { \"day\": 1, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 2, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 3, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 4, \"start\": \"09:00\", \"end\": \"17:00\" },\r\n    { \"day\": 5, \"start\": \"09:00\", \"end\": \"17:00\" }\r\n  ],\r\n  \"meeting_duration\": 30,\r\n  \"buffer_before\": 10,\r\n  \"buffer_after\": 10,\r\n  \"min_notice_minutes\": 60,\r\n  \"blackout_dates\": [\r\n    \"2025-11-25\",\r\n    \"2025-12-01\"\r\n  ],\r\n  \"timezone\": \"Asia/Jakarta\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organizer-settings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organizer-settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Settings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzOTA5MjcwLCJleHAiOjE3NjQ1MTQwNzAsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.Y22FiWb8cqqG-SO5dU1d5mUHpG0UIgHOd6uKm0yydUUFICtH-l6hu3M9U4MhviiOM_LQBHoLEIkveivUBs-ofQfISEiHABWIobFjx_mCTzRKoEfy9cImTMuVyhLD2DG0TwJ6pDWmA_3V3tfDXBWSnXjQkAV9k4XXgU6RcM48vXLTW8mfBqrmfLVJLty9Mp88CS5tT0elG-eKMxa-xgP5v5doKxHkretfylp6xRq9tBT4bvl5uYwTypACb8C3AS3lZ0hhDJC5FHPzG1Dnx96E9As7xmufDG-BiiLHwjDc66Y-MghvTVF-zyst8FVZJwm2Upv1k_1RRObxFK9BwwkSSA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost:5173"
+							},
+							{
+								"key": "Referer",
+								"value": "http://localhost:5173/"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"Windows\""
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/organizer-settings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organizer-settings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Create Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODc1MDU0LCJleHAiOjE3NjQ0Nzk4NTQsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.KsAGbfEW3uKzmT60P2jmGUpVj4eUfBQ9zXJGju76Ne7anTiZsbgNi00P3VYj5ARRKW-gA9wxmY3mm-I8Unx2f86B3DWkKRTypymgoBGMvzXOxVbkYoF0xAblFTxp7HJZXts9qQiUHxToHzWNMFZef-06ByhKhPgAIip5XtaHQs1V2uepphLyAF14Top7sUmu_sioce-99OTDrv489pl1WU2JTXQEtjJm7pxGCJYUSKfQblEzIXmW099W0pYBBkfMv5J98M6rWWIQn7fPV11j2BkHCXq4bCh628Sct-UBxwBLJ1Qa92CGimsFgU5LCwA8vjsqrpccHqzKiYe25ZHYRg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"organizer_id\": \"497edcc7-1fb8-4fee-a64a-dd506562a326\",\r\n  \"invitee_name\": \"John Doe\",\r\n  \"invitee_email\": \"john@example.com\",\r\n  \"invitee_phone\": \"081234567890\",\r\n  \"invitee_notes\": \"Meeting about project X\",\r\n  \"start_time\": \"2025-12-02T10:00:00+07:00\",\r\n  \"invitee_timezone\": \"Asia/Jakarta\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/booking",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get List Booking",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODc1MDU0LCJleHAiOjE3NjQ0Nzk4NTQsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.KsAGbfEW3uKzmT60P2jmGUpVj4eUfBQ9zXJGju76Ne7anTiZsbgNi00P3VYj5ARRKW-gA9wxmY3mm-I8Unx2f86B3DWkKRTypymgoBGMvzXOxVbkYoF0xAblFTxp7HJZXts9qQiUHxToHzWNMFZef-06ByhKhPgAIip5XtaHQs1V2uepphLyAF14Top7sUmu_sioce-99OTDrv489pl1WU2JTXQEtjJm7pxGCJYUSKfQblEzIXmW099W0pYBBkfMv5J98M6rWWIQn7fPV11j2BkHCXq4bCh628Sct-UBxwBLJ1Qa92CGimsFgU5LCwA8vjsqrpccHqzKiYe25ZHYRg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"organizer_id\": \"497edcc7-1fb8-4fee-a64a-dd506562a326\",\r\n  \"invitee_name\": \"John Doe\",\r\n  \"invitee_email\": \"john@example.com\",\r\n  \"invitee_phone\": \"081234567890\",\r\n  \"invitee_notes\": \"Meeting about project X\",\r\n  \"start_time\": \"2025-12-01T09:00:00+07:00\",\r\n  \"end_time\": \"2025-12-01T10:00:00+07:00\",\r\n  \"duration_minutes\": 60,\r\n  \"invitee_timezone\": \"Asia/Jakarta\",\r\n  \"organizer_timezone\": \"Asia/Jakarta\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "localhost:3000/booking/list-booking",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"booking",
+								"list-booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODc1MDU0LCJleHAiOjE3NjQ0Nzk4NTQsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.KsAGbfEW3uKzmT60P2jmGUpVj4eUfBQ9zXJGju76Ne7anTiZsbgNi00P3VYj5ARRKW-gA9wxmY3mm-I8Unx2f86B3DWkKRTypymgoBGMvzXOxVbkYoF0xAblFTxp7HJZXts9qQiUHxToHzWNMFZef-06ByhKhPgAIip5XtaHQs1V2uepphLyAF14Top7sUmu_sioce-99OTDrv489pl1WU2JTXQEtjJm7pxGCJYUSKfQblEzIXmW099W0pYBBkfMv5J98M6rWWIQn7fPV11j2BkHCXq4bCh628Sct-UBxwBLJ1Qa92CGimsFgU5LCwA8vjsqrpccHqzKiYe25ZHYRg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"organizer_id\": \"497edcc7-1fb8-4fee-a64a-dd506562a326\",\r\n  \"invitee_name\": \"John Doe\",\r\n  \"invitee_email\": \"john@example.com\",\r\n  \"invitee_phone\": \"081234567890\",\r\n  \"invitee_notes\": \"Meeting about project X\",\r\n  \"start_time\": \"2025-12-01T09:00:00+07:00\",\r\n  \"end_time\": \"2025-12-01T10:00:00+07:00\",\r\n  \"duration_minutes\": 60,\r\n  \"invitee_timezone\": \"Asia/Jakarta\",\r\n  \"organizer_timezone\": \"Asia/Jakarta\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "localhost:3000/booking/20c31c0e-2cd7-4c03-8599-465fa447ca9a",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"booking",
+								"20c31c0e-2cd7-4c03-8599-465fa447ca9a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODc1MDU0LCJleHAiOjE3NjQ0Nzk4NTQsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.KsAGbfEW3uKzmT60P2jmGUpVj4eUfBQ9zXJGju76Ne7anTiZsbgNi00P3VYj5ARRKW-gA9wxmY3mm-I8Unx2f86B3DWkKRTypymgoBGMvzXOxVbkYoF0xAblFTxp7HJZXts9qQiUHxToHzWNMFZef-06ByhKhPgAIip5XtaHQs1V2uepphLyAF14Top7sUmu_sioce-99OTDrv489pl1WU2JTXQEtjJm7pxGCJYUSKfQblEzIXmW099W0pYBBkfMv5J98M6rWWIQn7fPV11j2BkHCXq4bCh628Sct-UBxwBLJ1Qa92CGimsFgU5LCwA8vjsqrpccHqzKiYe25ZHYRg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"organizer_id\": \"497edcc7-1fb8-4fee-a64a-dd506562a326\",\r\n  \"invitee_name\": \"John Doe\",\r\n  \"invitee_email\": \"john@example.com\",\r\n  \"invitee_phone\": \"081234567890\",\r\n  \"invitee_notes\": \"Meeting about project X\",\r\n  \"start_time\": \"2025-12-01T09:00:00+07:00\",\r\n  \"end_time\": \"2025-12-01T10:00:00+07:00\",\r\n  \"duration_minutes\": 60,\r\n  \"invitee_timezone\": \"Asia/Jakarta\",\r\n  \"organizer_timezone\": \"Asia/Jakarta\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "localhost:3000/booking/20c31c0e-2cd7-4c03-8599-465fa447ca9a",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"booking",
+								"20c31c0e-2cd7-4c03-8599-465fa447ca9a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reschedule Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNjY5ODQ5LTQ4ZWYtNDU1Mi04NmMzLWFjNDc3MWE1ZDgwNiIsInVzZXJuYW1lIjoicGFybGFuIiwiaWF0IjoxNzYzODc1MDU0LCJleHAiOjE3NjQ0Nzk4NTQsImlzcyI6Im1lZXRpbmdfc2NoZWR1bGVyIn0.KsAGbfEW3uKzmT60P2jmGUpVj4eUfBQ9zXJGju76Ne7anTiZsbgNi00P3VYj5ARRKW-gA9wxmY3mm-I8Unx2f86B3DWkKRTypymgoBGMvzXOxVbkYoF0xAblFTxp7HJZXts9qQiUHxToHzWNMFZef-06ByhKhPgAIip5XtaHQs1V2uepphLyAF14Top7sUmu_sioce-99OTDrv489pl1WU2JTXQEtjJm7pxGCJYUSKfQblEzIXmW099W0pYBBkfMv5J98M6rWWIQn7fPV11j2BkHCXq4bCh628Sct-UBxwBLJ1Qa92CGimsFgU5LCwA8vjsqrpccHqzKiYe25ZHYRg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"new_start_time\": \"2025-12-03T15:00:00+07:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/booking/387ac376-1935-467c-93bc-69a0b3ab41ef/reschedule",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"booking",
+								"387ac376-1935-467c-93bc-69a0b3ab41ef",
+								"reschedule"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

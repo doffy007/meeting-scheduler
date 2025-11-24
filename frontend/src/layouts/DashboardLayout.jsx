@@ -28,7 +28,7 @@ export default function DashboardLayout() {
         <div className="dashboard-layout">
             <aside className="sidebar">
                 <div className="sidebar-header">
-                    <Link to="/dashboard/bookings" className="logo">Cal Clone</Link>
+                    <Link to="/dashboard/bookings" className="logo">Meeting Scheduler</Link>
                 </div>
                 <nav className="sidebar-nav">
                     {/* <Link to="/dashboard/bookings" className={`nav-item ${isActive('/dashboard/bookings') ? 'active' : ''}`}>

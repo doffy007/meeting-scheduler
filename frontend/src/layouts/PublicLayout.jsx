@@ -17,7 +17,7 @@ export default function PublicLayout() {
             </main>
             <footer className="public-footer">
                 <div className="container">
-                    <p>&copy; 2025 Cal Clone. All rights reserved.</p>
+                    <p>&copy; 2025 Meeting Scheduler. All rights reserved.</p>
                 </div>
             </footer>
         </div>
