@@ -352,20 +352,27 @@ class BookingServiceImpl implements IBookingService {
     sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
     const rows = await this.db.query<Booking>(sql, ...args);
-
     if (!rows.length) return [];
 
-    const organizerId = rows[0]!.organizer_id;
+    const tzCache: Record<string, string> = {};
 
-    const settings = await OrganizerSettingsService.getOrganizerSetting(organizerId);
-    const tz = settings?.timezone || "UTC";
+    const bookingsWithTz = await Promise.all(rows.map(async (b) => {
+      let tz = tzCache[b.organizer_id];
+      if (!tz) {
+        const settings = await OrganizerSettingsService.getOrganizerSetting(b.organizer_id);
+        tz = settings?.timezone || "UTC";
+        tzCache[b.organizer_id] = tz;
+      }
 
-    return rows.map(b => ({
-      ...b,
-      start_time: convertToTimezone(b.start_time ?? new Date(), tz),
-      end_time: b.end_time ? convertToTimezone(b.end_time, tz) : undefined,
-      organizer_timezone: tz, 
+      return {
+        ...b,
+        start_time: convertToTimezone(b.start_time ?? new Date(), tz),
+        end_time: b.end_time ? convertToTimezone(b.end_time, tz) : undefined,
+        organizer_timezone: tz,
+      };
     }));
+
+    return bookingsWithTz;
   }
 
     async rescheduleBooking(id: string, newStartTime: Date): Promise<Booking> {
