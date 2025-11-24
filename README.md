@@ -63,4 +63,4 @@ VITE_API_BASE_URL=
 
 Semua endpoint backend sudah terdokumentasi di file Postman berikut:  
 
-[Meeting Scheduler.postman_collection](Meeting_Scheduler.postman_collection)
+[Meeting Scheduler.postman_collection](./Meeting_Scheduler.postman_collection.json)
