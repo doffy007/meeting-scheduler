@@ -49,9 +49,6 @@ export const BookingController = {
         throw new BookingNotFoundError();
       }
 
-      if (existing.user_id !== userId) {
-        throw api.Forbidden;
-      }
 
       await BookingService.cancelBooking(bookingId);
 
@@ -86,13 +83,12 @@ export const BookingController = {
 
   async listBookings(c: Context) {
     try {
-      const params = getParams(c.req.query()); 
-      const userId = api.GetUserID(c, true);
+      const params = getParams(c.req.query());
+      const organizerId = api.GetStringUUIDParam(c, "organizerId", true);
 
-      const bookings = await BookingService.listBookings(userId, params);
+      const bookings = await BookingService.listBookings(organizerId, params);
 
       return c.json(bookings);
-
     } catch (err) {
       return api.Abort(c, null, err);
     }

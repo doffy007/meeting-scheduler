@@ -5,9 +5,9 @@ import { SetupParams, NoAnonymous } from "../api/middleware";
 const bookingHandler = new Hono();
 
 bookingHandler.post("/", SetupParams, NoAnonymous, BookingController.createBooking);
-bookingHandler.get("/list-booking", SetupParams, NoAnonymous, BookingController.listBookings);
+bookingHandler.get("/list-booking/:organizerId", SetupParams, NoAnonymous, BookingController.listBookings);
 bookingHandler.get("/:bookingId", SetupParams, NoAnonymous, BookingController.getBooking);
-bookingHandler.delete("/:bookingId", SetupParams, NoAnonymous, BookingController.cancelBooking);
+bookingHandler.delete("/:bookingId", SetupParams, BookingController.cancelBooking);
 bookingHandler.put("/:bookingId/reschedule", SetupParams, NoAnonymous, BookingController.rescheduleBooking);    
 
 export default bookingHandler;

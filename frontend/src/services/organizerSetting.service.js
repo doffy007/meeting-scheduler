@@ -1,6 +1,10 @@
 import axiosClient from "../api/axiosClient";
 
 export const organizerSettingsService = {
+    publicGetSettings: async (organizerId) => {
+        const res = await axiosClient.get(`/public-organizer/settings/${organizerId}`);
+        return res.data;
+    },
 
     getSettings: async () => {
         const res = await axiosClient.get("/organizer-settings");

@@ -6,12 +6,13 @@ import { composeDbQueryFromFilters } from "../filter/filter";
 import type { OrganizerSettings } from "../setting/setting";
 import type { Params } from "../filter/param";
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { convertToTimezone } from "../util/util.js";
 
 export interface IBookingService {
   createBooking(req: Booking): Promise<Booking>;
   cancelBooking(id: string): Promise<void>;
   getBooking(id: string): Promise<Booking | null>;
-  listBookings(userId: string, params: Params): Promise<Booking[]>;
+  listBookings(organizerId: string, params: Params): Promise<Booking[]>;
   publicListBookings(params: Params): Promise<Booking[]>;
   rescheduleBooking(id: string, newStartTime: Date): Promise<Booking>;  
 }
@@ -231,11 +232,24 @@ class BookingServiceImpl implements IBookingService {
         [id]
       );
 
-      return booking ?? null;
+      if (!booking) return null;
+
+      const settings = await OrganizerSettingsService.getOrganizerSetting(
+        booking.organizer_id
+      );
+      const tz = settings?.timezone || "UTC";
+
+      return {
+        ...booking,
+        start_time: convertToTimezone(booking.start_time ?? new Date(), tz),
+        end_time: booking.end_time
+          ? convertToTimezone(booking.end_time, tz)
+          : undefined,
+      };
     }
 
-    async listBookings(userId: string, params: Params): Promise<Booking[]> {
-      const args: any[] = [userId];
+    async listBookings(organizerId: string, params: Params): Promise<Booking[]> {
+      const args: any[] = [organizerId];
       let sql = `
         SELECT 
           id,
@@ -255,8 +269,7 @@ class BookingServiceImpl implements IBookingService {
           updated_at,
           cancelled_at
         FROM booking
-        WHERE user_id = $1
-          AND cancelled_at IS NULL
+        WHERE organizer_id = $1
       `;
 
       const filterQuery = composeDbQueryFromFilters(params.filters, args);
@@ -281,58 +294,79 @@ class BookingServiceImpl implements IBookingService {
       sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
       const rows = await this.db.query<Booking>(sql, ...args);
-      return rows as Booking[];
+      const settings = await OrganizerSettingsService.getOrganizerSetting(organizerId);
+      const tz = settings?.timezone || "UTC";
+
+      return rows.map(b => ({
+        ...b,
+        start_time: convertToTimezone(b.start_time ?? new Date(), tz),
+        end_time: b.end_time ? convertToTimezone(b.end_time, tz) : undefined,
+      }));
     }
 
-    
-    async publicListBookings(params: Params): Promise<Booking[]> {
-      const args: any[] = [];
-      let sql = `
-        SELECT 
-          id,
-          organizer_id,
-          user_id,
-          invitee_name,
-          invitee_email,
-          invitee_phone,
-          invitee_notes,
-          start_time,
-          end_time,
-          duration_minutes,
-          organizer_timezone,
-          invitee_timezone,
-          status,
-          created_at,
-          updated_at,
-          cancelled_at
-        FROM booking
-        WHERE cancelled_at IS NULL
-      `;
+  async publicListBookings(params: Params): Promise<Booking[]> {
+    const args: any[] = [];
+    let sql = `
+      SELECT 
+        id,
+        organizer_id,
+        user_id,
+        invitee_name,
+        invitee_email,
+        invitee_phone,
+        invitee_notes,
+        start_time,
+        end_time,
+        duration_minutes,
+        organizer_timezone,
+        invitee_timezone,
+        status,
+        created_at,
+        updated_at,
+        cancelled_at
+      FROM booking
+      WHERE cancelled_at IS NULL
+    `;
 
-      const filterQuery = composeDbQueryFromFilters(params.filters, args);
-      if (filterQuery.sql) {
-        sql += " AND " + filterQuery.sql; 
-      }
-
-      if (params.search) {
-        args.push(`%${params.search}%`);
-        sql += ` AND invitee_name ILIKE $${args.length}`;
-      }
-
-      if (params.sorts?.length) {
-        const sortSql = params.sorts.map(s => `${s.column} ${s.asc ? "ASC" : "DESC"}`).join(", ");
-        sql += ` ORDER BY ${sortSql}`;
-      } else {
-        sql += ` ORDER BY start_time ASC`;
-      }
-
-      const limit = params.page?.limit ?? 20;
-      const offset = params.page?.offset ?? 0;
-      sql += ` LIMIT ${limit} OFFSET ${offset}`;
-
-      const rows = await this.db.query<Booking>(sql, ...args);
-      return rows as Booking[];
+    const filterQuery = composeDbQueryFromFilters(params.filters, args);
+    if (filterQuery.sql) {
+      sql += " AND " + filterQuery.sql;
     }
+
+    if (params.search) {
+      args.push(`%${params.search}%`);
+      sql += ` AND invitee_name ILIKE $${args.length}`;
+    }
+
+    if (params.sorts?.length) {
+      const sortSql = params.sorts
+        .map(s => `${s.column} ${s.asc ? "ASC" : "DESC"}`)
+        .join(", ");
+      sql += ` ORDER BY ${sortSql}`;
+    } else {
+      sql += ` ORDER BY start_time ASC`;
+    }
+
+    const limit = params.page?.limit ?? 20;
+    const offset = params.page?.offset ?? 0;
+    sql += ` LIMIT ${limit} OFFSET ${offset}`;
+
+    const rows = await this.db.query<Booking>(sql, ...args);
+
+    if (!rows.length) return [];
+
+    const organizerId = rows[0]!.organizer_id;
+
+    const settings = await OrganizerSettingsService.getOrganizerSetting(organizerId);
+    const tz = settings?.timezone || "UTC";
+
+    return rows.map(b => ({
+      ...b,
+      start_time: convertToTimezone(b.start_time ?? new Date(), tz),
+      end_time: b.end_time ? convertToTimezone(b.end_time, tz) : undefined,
+      organizer_timezone: tz, 
+    }));
+  }
 
     async rescheduleBooking(id: string, newStartTime: Date): Promise<Booking> {
       const booking = await this.getBooking(id);

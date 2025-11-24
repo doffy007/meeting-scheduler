@@ -31,11 +31,11 @@ export default function DashboardLayout() {
                     <Link to="/dashboard/bookings" className="logo">Meeting Scheduler</Link>
                 </div>
                 <nav className="sidebar-nav">
-                    {/* <Link to="/dashboard/bookings" className={`nav-item ${isActive('/dashboard/bookings') ? 'active' : ''}`}>
+                    <Link to="/dashboard/bookings" className={`nav-item ${isActive('/dashboard/bookings') ? 'active' : ''}`}>
                         <Calendar size={20} />
                         <span>Bookings</span>
                     </Link>
-                    <Link to="/dashboard/event-types" className={`nav-item ${isActive('/dashboard/event-types') ? 'active' : ''}`}>
+                    {/* <Link to="/dashboard/event-types" className={`nav-item ${isActive('/dashboard/event-types') ? 'active' : ''}`}>
                         <LinkIcon size={20} />
                         <span>Event Types</span>
                     </Link>

@@ -1,4 +1,5 @@
 import { createConnection } from "net";
+import { toZonedTime } from "date-fns-tz";
 
 /**
  * Get difference between two string arrays
@@ -315,4 +316,9 @@ export function parseDate(s: string): Date | null {
   } catch {
     return null;
   }
+}
+
+export function convertToTimezone(date: Date | undefined | null, tz: string): Date {
+  if (!date) return new Date(); 
+  return toZonedTime(date, tz);
 }

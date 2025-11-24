@@ -70,7 +70,6 @@ class OrganizerSettingsService implements IOrganizerSettings {
   }
 
   async createOrganizerSettings(req: OrganizerSettings): Promise<OrganizerSettings> {
-    // Validate inputs
     if (req.working_hours && req.working_hours.length > 0) {
       this.validateWorkingHours(req.working_hours);
     }
@@ -81,7 +80,6 @@ class OrganizerSettingsService implements IOrganizerSettings {
       this.validateBlackoutDates(req.blackout_dates);
     }
 
-    // Set defaults
     const now = new Date();
     req.working_hours = req.working_hours || [];
     req.blackout_dates = req.blackout_dates || [];

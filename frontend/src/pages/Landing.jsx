@@ -6,6 +6,7 @@ import { bookingService } from '../services/booking.service';
 
 import DateSelection from '../pages/booking/DateSelection'; 
 import '../styles/Landing.css'; 
+import { toZonedTime, format } from 'date-fns-tz';
 
 export default function Landing() {
     const [organizers, setOrganizers] = useState([]);
@@ -174,9 +175,14 @@ export default function Landing() {
                             {bookings.length > 0 ? (
                                 <div className="organizers-grid">
                                     {bookings.map((event) => {
-                                        const dateObj = new Date(event.start_time);
-                                        const dateStr = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-                                        const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                                        const tz = event.organizer_timezone || 'UTC';
+
+                                        const zonedDate = toZonedTime(new Date(event.start_time), tz);
+
+                                        const dateStr = format(zonedDate, 'dd MMM yyyy', { timeZone: tz });
+                                        const timeStr = format(zonedDate, 'hh:mm a', { timeZone: tz });
+
+                                        const gmtOffset = `GMT${format(zonedDate, 'XXX', { timeZone: tz })}`;
 
                                         return (
                                             <div key={event.id} className="organizer-card event-card-style">
@@ -184,24 +190,38 @@ export default function Landing() {
                                                     <div className="event-icon-bg"><Calendar size={24} /></div>
                                                     <div className="org-identity">
                                                         <h3>{event.invitee_notes || 'Session'}</h3>
-                                                        <span className="hosted-by" style={{ fontSize: '0.85rem', color: '#6b7280' }}>{dateStr} • {timeStr}</span>
+                                                        <span className="hosted-by" style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                                                            {dateStr} • {timeStr} • {gmtOffset}
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div className="card-body">
-                                                    <p className="event-desc" style={{ marginBottom: '12px', color: '#374151' }}><strong>Guest:</strong> {event.invitee_name}</p>
-                                                    <div className="info-item"><Clock size={16} /><span style={{ textTransform: 'capitalize' }}>{event.duration_minutes} mins • {event.status}</span></div>
+                                                    <p className="event-desc" style={{ marginBottom: '12px', color: '#374151' }}>
+                                                        <strong>Guest:</strong> {event.invitee_name}
+                                                    </p>
+                                                    <div className="info-item">
+                                                        <Clock size={16} />
+                                                        <span style={{ textTransform: 'capitalize' }}>
+                                                            {event.duration_minutes} mins • {event.status}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 
                                                 <div className="card-footer" style={{ display: 'flex', gap: '10px' }}>
                                                     <button 
-                                                        className="btn-primary" style={{justifyContent:'center', cursor:'pointer'}}
-                                                        onClick={() => openReschedule(event.id, event.organizer_id)} // <-- PENTING: Pass organizer_id
+                                                        className="btn-primary" 
+                                                        style={{ justifyContent:'center', cursor:'pointer' }}
+                                                        onClick={() => openReschedule(event.id, event.organizer_id)}
                                                         disabled={loadingAction}
                                                     >
                                                         Reschedule
                                                     </button>
                                                     <button 
-                                                        className="btn-danger" style={{justifyContent:'center', cursor:'pointer', background:'#fee2e2', color:'#ef4444', border:'1px solid #fecaca'}}
+                                                        className="btn-danger" 
+                                                        style={{
+                                                            justifyContent:'center', cursor:'pointer',
+                                                            background:'#fee2e2', color:'#ef4444', border:'1px solid #fecaca'
+                                                        }}
                                                         onClick={() => handleCancel(event.id)}
                                                         disabled={loadingAction}
                                                     >

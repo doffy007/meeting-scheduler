@@ -1,27 +1,39 @@
 import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
-import { Loader, X, Clock, Calendar as CalendarIcon, MapPin, Globe } from 'lucide-react';
+import { Loader, X, Clock, Calendar as CalendarIcon, MapPin } from 'lucide-react';
 import { bookingService } from '../../services/booking.service';
+
+import { toZonedTime } from 'date-fns-tz';
 
 import "react-datepicker/dist/react-datepicker.css";
 import '../../styles/DateSelection.css'; 
+import { organizerSettingsService } from '../../services/organizerSetting.service';
 
 export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = false }) {
     const [loading, setLoading] = useState(true);
     const [slotsByDate, setSlotsByDate] = useState({});
-    const [availableDates, setAvailableDates] = useState([]);
+       const [availableDates, setAvailableDates] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDaySlots, setSelectedDaySlots] = useState([]);
 
+    const [organizerTz, setOrganizerTz] = useState("Asia/Jakarta");
+
     useEffect(() => {
         if (!organizerId) return; 
 
-        async function fetchSlots() {
-            setLoading(true); 
+        async function fetchData() {
+            setLoading(true);
+
             try {
+                const settings = await organizerSettingsService.publicGetSettings(organizerId);
+                if (settings?.timezone) {
+                    setOrganizerTz(settings.timezone);
+                }
+
                 const res = await bookingService.getAvailability(organizerId);
+
                 let data = [];
                 if (res?.slots && Array.isArray(res.slots)) data = res.slots;
                 else if (Array.isArray(res)) data = res;
@@ -33,30 +45,49 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
                 const datesArr = [];
 
                 data.forEach(slot => {
-                    const d = new Date(slot.start);
-                    const dateKey = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toDateString();
-                    
+                    const d = toZonedTime(slot.start, settings.timezone);
+
+                    const dateKey = new Date(
+                        d.getFullYear(),
+                        d.getMonth(),
+                        d.getDate()
+                    ).toDateString();
+
                     if (!grouped[dateKey]) {
                         grouped[dateKey] = [];
                         datesArr.push(new Date(d.getFullYear(), d.getMonth(), d.getDate()));
                     }
                     grouped[dateKey].push(slot);
                 });
-                
+
                 setSlotsByDate(grouped);
                 setAvailableDates(datesArr);
+
             } catch (err) {
-                console.error("Failed to fetch slots:", err);
+                console.error("Failed:", err);
             } finally {
                 setLoading(false);
             }
         }
-        fetchSlots();
+
+        fetchData();
     }, [organizerId]);
 
+  
     const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const key = date.toDateString();
+        if (!date) return;
+
+        const organizerDate = toZonedTime(date, organizerTz);
+
+        const normalized = new Date(
+            organizerDate.getFullYear(),
+            organizerDate.getMonth(),
+            organizerDate.getDate()
+        );
+
+        setSelectedDate(normalized);
+
+        const key = normalized.toDateString();
         const slots = slotsByDate[key] || [];
         
         setSelectedDaySlots(slots);
@@ -68,18 +99,21 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
     const renderSlots = () => (
         <div className="slots-grid" style={isEmbedded ? { gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' } : {}}>
             {selectedDaySlots.map((slot, idx) => {
-                const timeLabel = new Date(slot.start).toLocaleTimeString('en-US', { 
+                
+                const zoned = toZonedTime(slot.start, organizerTz);
+
+                const timeLabel = zoned.toLocaleTimeString('en-US', { 
                     hour:'2-digit', 
                     minute:'2-digit', 
-                    hour12: false 
+                    hour12: true 
                 });
+
                 return (
                     <button
                         key={idx}
                         disabled={!slot.available}
                         onClick={() => {
                             if (slot.available) {
-                                console.log('Slot selected:', slot); 
                                 onSelectSlot(slot); 
                             }
                         }}

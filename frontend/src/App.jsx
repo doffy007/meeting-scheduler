@@ -31,11 +31,13 @@ function App() {
       <Route path="/booking/:organizerId" element={<BookingPage />} />
 
       <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Navigate to="bookings" replace />} /> 
         <Route path="bookings" element={<Bookings />} />
         <Route path="event-types" element={<EventTypes />} />
         <Route path="availability" element={<Availability />} />
         <Route path="settings" element={<Settings />} />
-      </Route>
+    </Route>
+
 
       <Route path="*" element={<Navigate to="/" replace />} />
 

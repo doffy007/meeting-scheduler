@@ -237,3 +237,15 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+.btn-cancel {
+  border: 1px solid #ef4444; /* merah */
+  color: #ef4444;
+  background: white;
+}
+
+.btn-cancel:hover {
+  background: #fee2e2; /* merah soft */
+  border-color: #dc2626;
+  color: #dc2626;
+}

@@ -49,9 +49,9 @@ export const bookingService = {
     return response.data;
   },
 
-  getListBooking: async (filterData) => {
-    const response = await axiosClient.get('/booking/list-booking', {
-      data: filterData 
+  getListBooking: async (organizerId, filterData) => {
+    const response = await axiosClient.get(`/booking/list-booking/${organizerId}`, {
+      params: filterData
     });
     return response.data;
   },

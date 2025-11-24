@@ -5,6 +5,7 @@ import { organizerSettingsService } from '../../services/organizerSetting.servic
 import { organizerService } from '../../services/organizer.service';
 import { authService } from '../../services/auth.service';
 import '../../styles/Dashboard.css';
+import TimePicker from '../../components/TimePicker';
 
 const DAYS = [
     { value: 1, label: 'Monday' },
@@ -83,7 +84,6 @@ useEffect(() => {
 
   fetchAll();
 }, []);
-
 
 
 const handleSubmit = async (e) => {
@@ -279,14 +279,12 @@ const handleSubmit = async (e) => {
 
                                     {active ? (
                                         <div className="time-range">
-                                            <input
-                                                type="time"
+                                           <TimePicker
                                                 value={schedule.start}
                                                 onChange={(e) => handleTimeChange(day.value, "start", e.target.value)}
                                             />
                                             <span>—</span>
-                                            <input
-                                                type="time"
+                                            <TimePicker
                                                 value={schedule.end}
                                                 onChange={(e) => handleTimeChange(day.value, "end", e.target.value)}
                                             />
@@ -294,7 +292,6 @@ const handleSubmit = async (e) => {
                                     ) : (
                                         <span className="inactive-text">Unavailable</span>
                                     )}
-
                                 </div>
                             );
                         })}
