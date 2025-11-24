@@ -1,0 +1,278 @@
+/* --- GLOBAL VARIABLES --- */
+:root {
+  --primary: #0f172a;    /* Slate 900 */
+  --secondary: #64748b;  /* Slate 500 */
+  --bg-hover: #f1f5f9;   /* Slate 100 */
+  --border: #e2e8f0;     /* Slate 200 */
+  --radius: 12px;
+  --danger: #ef4444;     /* Red 500 */
+  --success: #22c55e;    /* Green 500 */
+}
+
+/* --- LAYOUT UTAMA --- */
+.booking-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* --- BAGIAN KIRI: INFO SESI --- */
+.session-details-panel {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 1rem;
+}
+.session-details-panel h1 { 
+  font-size: 1.8rem; 
+  color: var(--primary); 
+  margin: 0.5rem 0; 
+  font-weight: 800;
+}
+.session-details-panel p { 
+  color: var(--secondary); 
+  line-height: 1.6; 
+}
+.detail-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-bottom: 12px; 
+  color: #334155; 
+  font-weight: 500;
+}
+
+/* --- BAGIAN KANAN: KALENDER CONTAINER --- */
+.ds-container {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  border: 1px solid var(--border);
+  height: fit-content;
+}
+
+.ds-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.ds-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+.ds-subtitle { 
+  margin-top: 6px; 
+  font-size: 0.9rem; 
+  color: var(--secondary); 
+}
+
+/* --- REACT DATEPICKER OVERRIDES --- */
+.datepicker-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.react-datepicker {
+  border: none !important;
+  font-family: inherit !important;
+  width: 100%;
+}
+.react-datepicker__month-container {
+  width: 100%;
+}
+.react-datepicker__header {
+  background: white !important;
+  border-bottom: none !important;
+  padding-top: 0 !important;
+}
+.react-datepicker__current-month {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  color: var(--primary) !important;
+}
+.react-datepicker__day-name {
+  color: var(--secondary) !important;
+  font-weight: 600 !important;
+  width: 2.7rem !important;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+}
+.react-datepicker__day {
+  width: 2.7rem !important;
+  line-height: 2.7rem !important;
+  margin: 0.1rem !important;
+  border-radius: 50% !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Day Interactions */
+.react-datepicker__day:not(.react-datepicker__day--disabled):hover {
+  background-color: var(--bg-hover) !important;
+  color: var(--primary) !important;
+  transform: scale(1.1);
+  font-weight: bold;
+}
+.react-datepicker__day--selected, 
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--primary) !important;
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.3);
+}
+.react-datepicker__day--disabled {
+  color: #cbd5e1 !important;
+  cursor: default !important;
+}
+.react-datepicker__navigation { top: 10px !important; }
+
+/* --- MODAL STYLES --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex; justify-content: center; align-items: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: white;
+  width: 90%; 
+  max-width: 450px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+/* --- HEADER MODAL & BUTTON CLOSE (YANG DIPERBAIKI) --- */
+.modal-header {
+  position: relative; /* Kunci utama agar button absolute bekerja */
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: white;
+  display: flex;
+  align-items: center;
+}
+
+.modal-title-group {
+  margin-right: 60px; /* Memberi ruang agar teks tidak menabrak tombol close */
+}
+.modal-title-group h3 {
+  margin: 0; font-size: 1.2rem; color: var(--primary);
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700;
+}
+.modal-title-group p {
+  margin: 4px 0 0 0; font-size: 0.9rem; color: var(--secondary);
+}
+
+/* Tombol Close Besar & Jelas */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  
+  width: 44px;  /* Ukuran besar */
+  height: 44px; /* Ukuran besar */
+  
+  background: #f1f5f9; /* Background abu muda agar terlihat jelas */
+  border: none;
+  border-radius: 50%;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.close-btn:hover {
+  background-color: #fee2e2; /* Background merah muda */
+  color: var(--danger);      /* Icon merah */
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* --- SLOTS --- */
+.slots-container { 
+  padding: 1.5rem; 
+  overflow-y: auto; 
+  /* Scrollbar cantik */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.slots-container::-webkit-scrollbar { width: 6px; }
+.slots-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+
+.slots-grid {
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); /* 2 Kolom */
+  gap: 12px;
+}
+
+.slot-btn {
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  display: flex; justify-content: center; align-items: center;
+}
+
+/* Available (Hijau) */
+.slot-btn.available {
+  border: 1px solid #86efac;
+  color: #166534;
+  background-color: #f0fdf4;
+}
+.slot-btn.available:hover {
+  background-color: var(--success); 
+  color: white;
+  border-color: var(--success);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Unavailable (Merah/Abu) */
+.slot-btn.unavailable {
+  border: 1px solid var(--border);
+  color: #cbd5e1;
+  background-color: #f8fafc;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* --- LOADING & ANIMATIONS --- */
+.loading-container { 
+  display: flex; flex-direction: column; align-items: center; 
+  padding: 4rem 2rem; color: var(--secondary); 
+}
+.spin-icon { animation: spin 1s linear infinite; margin-bottom: 12px; color: var(--primary); }
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

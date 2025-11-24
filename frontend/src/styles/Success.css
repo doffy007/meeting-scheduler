@@ -1,0 +1,162 @@
+/* --- Layout Halaman --- */
+.success-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc; /* Abu-abu sangat muda, bersih */
+    padding: 1.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* --- Kartu Utama --- */
+.success-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 460px; /* Lebar ideal seperti tiket */
+    border-radius: 24px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08); /* Shadow lembut */
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid #f1f5f9;
+}
+
+/* --- Header --- */
+.success-header {
+    margin-bottom: 2.5rem;
+}
+
+.icon-pulse {
+    display: inline-flex;
+    color: #10b981; /* Hijau Sukses */
+    background-color: #ecfdf5; /* Hijau background pudar */
+    padding: 1rem;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* --- Details Section (Tampilan Clean/Full) --- */
+.success-details {
+    text-align: left;
+    margin-bottom: 2.5rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.detail-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background-color: #f1f5f9; /* Abu-abu icon box */
+    border-radius: 12px;
+    color: #475569;
+    flex-shrink: 0;
+}
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 2px; /* Penyesuaian visual */
+}
+
+.label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-left: 6px;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+/* --- Footer / Button --- */
+.success-footer {
+    width: 100%;
+}
+
+.link-wrapper {
+    text-decoration: none;
+    display: block;
+}
+
+/* Helper untuk Button jika komponen Button mendukung className, 
+   jika tidak, bungkus Button dengan div yang memiliki class ini */
+.btn-full {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.875rem;
+    font-weight: 600;
+}
+
+/* --- Animasi --- */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+}
