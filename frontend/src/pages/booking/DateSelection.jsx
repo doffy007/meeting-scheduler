@@ -28,9 +28,8 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
 
             try {
                 const settings = await organizerSettingsService.publicGetSettings(organizerId);
-                if (settings?.timezone) {
-                    setOrganizerTz(settings.timezone);
-                }
+                const tz = settings?.timezone || "Asia/Jakarta";
+                setOrganizerTz(tz);
 
                 const res = await bookingService.getAvailability(organizerId);
 
@@ -39,19 +38,17 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
                 else if (Array.isArray(res)) data = res;
                 else if (res?.data && Array.isArray(res.data)) data = res.data;
 
-                data.sort((a, b) => new Date(a.start) - new Date(b.start));
+                const maxTime = settings?.working_hours?.end || "23:59";
+                data = data.map(slot => ({ ...slot, organizer_max_time: maxTime }));
+
+                data.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
                 const grouped = {};
                 const datesArr = [];
 
                 data.forEach(slot => {
-                    const d = toZonedTime(slot.start, settings.timezone);
-
-                    const dateKey = new Date(
-                        d.getFullYear(),
-                        d.getMonth(),
-                        d.getDate()
-                    ).toDateString();
+                    const d = toZonedTime(new Date(slot.start), tz);
+                    const dateKey = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toDateString();
 
                     if (!grouped[dateKey]) {
                         grouped[dateKey] = [];
@@ -73,7 +70,6 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
         fetchData();
     }, [organizerId]);
 
-  
     const handleDateChange = (date) => {
         if (!date) return;
 
@@ -99,25 +95,25 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
     const renderSlots = () => (
         <div className="slots-grid" style={isEmbedded ? { gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' } : {}}>
             {selectedDaySlots.map((slot, idx) => {
-                
-                const zoned = toZonedTime(slot.start, organizerTz);
+                const slotInOrganizerTz = toZonedTime(new Date(slot.start), organizerTz);
 
-                const timeLabel = zoned.toLocaleTimeString('en-US', { 
-                    hour:'2-digit', 
-                    minute:'2-digit', 
-                    hour12: true 
-                });
+            
+                const maxTimeStr = slot.organizer_max_time || "23:59"; 
+                const [maxH, maxM] = maxTimeStr.split(':').map(Number);
+                const maxDate = new Date(slotInOrganizerTz);
+                maxDate.setHours(maxH, maxM, 0, 0);
+
+                const isAfterMax = slotInOrganizerTz.getTime() > maxDate.getTime();
+
+                const localDate = new Date(slot.start);
+                const timeLabel = localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
                 return (
                     <button
                         key={idx}
-                        disabled={!slot.available}
-                        onClick={() => {
-                            if (slot.available) {
-                                onSelectSlot(slot); 
-                            }
-                        }}
-                        className={slot.available ? "slot-btn available" : "slot-btn unavailable"}
+                        disabled={!slot.available || isAfterMax}
+                        onClick={() => slot.available && !isAfterMax && onSelectSlot(slot)}
+                        className={slot.available && !isAfterMax ? "slot-btn available" : "slot-btn unavailable"}
                         style={isEmbedded ? { fontSize: '0.85rem', padding: '8px' } : {}}
                     >
                         {timeLabel}

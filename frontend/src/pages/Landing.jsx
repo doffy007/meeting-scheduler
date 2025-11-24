@@ -6,7 +6,6 @@ import { bookingService } from '../services/booking.service';
 
 import DateSelection from '../pages/booking/DateSelection'; 
 import '../styles/Landing.css'; 
-import { toZonedTime, format } from 'date-fns-tz';
 
 export default function Landing() {
     const [organizers, setOrganizers] = useState([]);
@@ -175,14 +174,19 @@ export default function Landing() {
                             {bookings.length > 0 ? (
                                 <div className="organizers-grid">
                                     {bookings.map((event) => {
-                                        const tz = event.organizer_timezone || 'UTC';
+                                       const localDate = new Date(event.start_time);
 
-                                        const zonedDate = toZonedTime(new Date(event.start_time), tz);
+                                        const dateStr = localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                                        const timeStr = localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-                                        const dateStr = format(zonedDate, 'dd MMM yyyy', { timeZone: tz });
-                                        const timeStr = format(zonedDate, 'hh:mm a', { timeZone: tz });
+                                        const offsetMinutes = localDate.getTimezoneOffset();
+                                        const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
+                                        const offsetMins = Math.abs(offsetMinutes) % 60;
+                                        const sign = offsetMinutes <= 0 ? '+' : '-';
+                                        const gmtOffset = `GMT${sign}${String(offsetHours).padStart(2,'0')}:${String(offsetMins).padStart(2,'0')}`;
 
-                                        const gmtOffset = `GMT${format(zonedDate, 'XXX', { timeZone: tz })}`;
+                                        console.log(`${dateStr} • ${timeStr} • ${gmtOffset}`);
+
 
                                         return (
                                             <div key={event.id} className="organizer-card event-card-style">
