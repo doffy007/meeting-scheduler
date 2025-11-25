@@ -6,6 +6,7 @@ import userHandler from "./internal/router/router.user";
 import publicOrganizerHandler from "./internal/router/router.public.organizer";
 import publicBookingHandler from "./internal/router/router.public.booking"; 
 import  { cors } from "hono/cors";
+import config from "./internal/config";
 
 const app = new Hono();
 
@@ -32,4 +33,7 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 // Fallback route
 app.all("*", (c) => c.json({ error: "Not Found" }, 404));
 
-export default app;
+export default {
+  port: config.port, 
+  fetch: app.fetch,
+};
