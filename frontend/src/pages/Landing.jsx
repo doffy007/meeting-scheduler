@@ -185,9 +185,6 @@ export default function Landing() {
                                         const sign = offsetMinutes <= 0 ? '+' : '-';
                                         const gmtOffset = `GMT${sign}${String(offsetHours).padStart(2,'0')}:${String(offsetMins).padStart(2,'0')}`;
 
-                                        console.log(`${dateStr} • ${timeStr} • ${gmtOffset}`);
-
-
                                         return (
                                             <div key={event.id} className="organizer-card event-card-style">
                                                 <div className="card-header">

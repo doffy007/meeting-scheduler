@@ -21,31 +21,39 @@ class OrganizerService implements IOrganizerService {
     }
 
   async createOrganizer(req: Organizer): Promise<Organizer> {
-    const id = UIDService.generate();
-    const now = new Date();
-
-    const query = `
-        INSERT INTO organizer (id, user_id, name, email, phone, address, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, user_id, name, email, phone, address, created_at, updated_at, deleted_at
-    `;
-
-    const row = await DBService.queryRow<Organizer>(query,
-        id,
-        req.user_id,
-        req.name,
-        req.email,
-        req.phone,
-        req.address,
-        now,
-        now
-    );
-
-    if (!row) {
-        throw new Error("Failed to create organizer");
+    if (!req.id) {
+      req.id = UIDService.generate();
     }
 
-    return row;
+    const now = new Date();
+    req.created_at = now;
+    req.updated_at = now;
+
+    await this.db.commit(null, async (tx) => {
+      await tx`
+        INSERT INTO organizer (
+          id, 
+          user_id, 
+          name, 
+          email, 
+          phone, 
+          address, 
+          created_at, 
+          updated_at
+        ) VALUES (
+          ${req.id}, 
+          ${req.user_id}, 
+          ${req.name}, 
+          ${req.email}, 
+          ${req.phone}, 
+          ${req.address}, 
+          ${req.created_at}, 
+          ${req.updated_at}
+        )
+      `;
+    });
+
+    return req
   }
 
   async updateOrganizer(req: Organizer, updatedFields: string[], userId: string): Promise<Organizer> {

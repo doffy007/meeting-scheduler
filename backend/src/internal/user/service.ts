@@ -96,8 +96,8 @@ class UserServiceImpl implements IUserService {
 
     req.password = await hashPassword(req.password);
 
-    await this.db.raw.begin(async (sql) => {
-      await sql`
+    await this.db.commit(null, async (tx) => {
+      await tx`
         INSERT INTO "user" (
           id,
           name,
@@ -130,17 +130,29 @@ class UserServiceImpl implements IUserService {
           ${req.national_id_number}
         )
       `;
-    });
 
-    await OrganizerService.createOrganizer({
-        user_id: req.id,
-        name: req.name,
-        email: req.email,
-        phone: req.phone_number,
-        address: req.location,  
-        created_at: now,
-        updated_at: now,
-    } as Organizer);
+      await tx`
+        INSERT INTO organizer (
+          id,
+          user_id,
+          name,
+          email,
+          phone,
+          address,
+          created_at,
+          updated_at
+        ) VALUES (
+          ${UIDService.generate()},
+          ${req.id},
+          ${req.name},
+          ${req.email},
+          ${req.phone_number},
+          ${req.location},
+          ${now},
+          ${now}
+        )
+      `;
+    });
 
     // Remove sensitive data before returning
     req.password = "";
@@ -269,13 +281,12 @@ class UserServiceImpl implements IUserService {
         const idParamIndex = paramIndex++;
         args.push(req.id);
 
-        await this.db.raw.begin(async (sql) => {
-            await sql.unsafe(
+        await this.db.commit(null, async (tx) => {
+            await tx
             `UPDATE "user"
             SET ${setClauses.join(", ")}
             WHERE id = $${idParamIndex}`,
             args
-            );
         });
     }
 
@@ -318,8 +329,8 @@ class UserServiceImpl implements IUserService {
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    await this.db.raw.begin(async (sql) => {
-      await sql`
+    await this.db.commit(null, async (tx) => {
+      await tx`
         UPDATE "user"
         SET deleted_at = ${new Date()},
             updated_at = ${new Date()}

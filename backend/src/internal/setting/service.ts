@@ -69,7 +69,7 @@ class OrganizerSettingsService implements IOrganizerSettings {
     }
   }
 
-  async createOrganizerSettings(req: OrganizerSettings): Promise<OrganizerSettings> {
+async createOrganizerSettings(req: OrganizerSettings): Promise<OrganizerSettings> {
     if (req.working_hours && req.working_hours.length > 0) {
       this.validateWorkingHours(req.working_hours);
     }
@@ -81,60 +81,65 @@ class OrganizerSettingsService implements IOrganizerSettings {
     }
 
     const now = new Date();
-    req.working_hours = req.working_hours || [];
-    req.blackout_dates = req.blackout_dates || [];
-    req.meeting_duration_minutes = req.meeting_duration_minutes ?? 30;
-    req.buffer_before_minutes = req.buffer_before_minutes ?? 0;
-    req.buffer_after_minutes = req.buffer_after_minutes ?? 0;
-    req.minimum_notice_hours = req.minimum_notice_hours ?? 24;
-    req.timezone = req.timezone || 'UTC';
 
-    const query = `
-      INSERT INTO organizer_settings (
-        organizer_id, 
-        meeting_duration_minutes, 
-        buffer_before_minutes,
-        buffer_after_minutes,
-        minimum_notice_hours, 
-        timezone, 
-        working_hours, 
-        blackout_dates, 
-        created_at, 
-        updated_at
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING 
-        organizer_id, 
-        meeting_duration_minutes, 
-        buffer_before_minutes,
-        buffer_after_minutes,
-        minimum_notice_hours, 
-        timezone, 
-        working_hours, 
-        blackout_dates, 
-        created_at, 
-        updated_at
-    `;
+    const meetingDuration = req.meeting_duration_minutes ?? 30;
+    const bufferBefore = req.buffer_before_minutes ?? 0;
+    const bufferAfter = req.buffer_after_minutes ?? 0;
+    const minNotice = req.minimum_notice_hours ?? 24;
+    const timezone = req.timezone || 'UTC';
+    
+    const workingHours = req.working_hours ?? []; 
+    const blackoutDates = req.blackout_dates ?? [];
 
-    const row = await DBService.queryRow<any>(
-      query,
-      req.organizer_id,
-      req.meeting_duration_minutes,
-      req.buffer_before_minutes,
-      req.buffer_after_minutes,
-      req.minimum_notice_hours,
-      req.timezone,
-      req.working_hours,
-      req.blackout_dates,
-      now,
-      now
-    );
+    let createdRow: any = null;
 
-    if (!row) {
+    await this.db.commit(null, async (tx) => {
+      const rows = await tx`
+        INSERT INTO organizer_settings (
+          organizer_id, 
+          meeting_duration_minutes, 
+          buffer_before_minutes,
+          buffer_after_minutes,
+          minimum_notice_hours, 
+          timezone, 
+          working_hours, 
+          blackout_dates, 
+          created_at, 
+          updated_at
+        )
+        VALUES (
+          ${req.organizer_id}, 
+          ${meetingDuration},      
+          ${bufferBefore}, 
+          ${bufferAfter}, 
+          ${minNotice}, 
+          ${timezone}, 
+          ${tx.json(workingHours as any)},  
+          ${tx.json(blackoutDates as any)}, 
+          ${now}, 
+          ${now}
+        )
+        RETURNING 
+          organizer_id, 
+          meeting_duration_minutes, 
+          buffer_before_minutes,
+          buffer_after_minutes,
+          minimum_notice_hours, 
+          timezone, 
+          working_hours, 
+          blackout_dates, 
+          created_at, 
+          updated_at
+      `;
+
+      createdRow = rows[0];
+    });
+
+    if (!createdRow) {
       throw new Error("Failed to create organizer settings");
     }
 
-    return this.mapRowToSettings(row);
+    return this.mapRowToSettings(createdRow);
   }
 
   async getOrganizerSetting(id: string): Promise<OrganizerSettings | null> {
@@ -163,11 +168,7 @@ class OrganizerSettingsService implements IOrganizerSettings {
     return this.mapRowToSettings(row);
   }
 
-  async updateOrganizerSettings(
-    req: OrganizerSettings, 
-    updatedFields: string[], 
-    userId: string
-  ): Promise<OrganizerSettings> {
+  async updateOrganizerSettings(req: OrganizerSettings, updatedFields: string[], userId: string): Promise<OrganizerSettings> {
     const fieldMapping: Record<string, string> = {
       'meeting_duration': 'meeting_duration_minutes',
       'buffer_before': 'buffer_before_minutes',
@@ -175,53 +176,67 @@ class OrganizerSettingsService implements IOrganizerSettings {
       'min_notice_minutes': 'minimum_notice_hours',
     };
 
-    const mappedFields = updatedFields.map(field => fieldMapping[field] || field);
+    const getDbField = (field: string) => fieldMapping[field] || field;
 
-    if (mappedFields.includes('working_hours') && req.working_hours) this.validateWorkingHours(req.working_hours);
-    if (mappedFields.includes('timezone') && req.timezone) this.validateTimezone(req.timezone);
-    if (mappedFields.includes('blackout_dates') && req.blackout_dates) this.validateBlackoutDates(req.blackout_dates);
+    const mappedFieldsToCheck = updatedFields.map(getDbField);
+
+    if (mappedFieldsToCheck.includes('working_hours') && req.working_hours) {
+      this.validateWorkingHours(req.working_hours);
+    }
+    if (mappedFieldsToCheck.includes('timezone') && req.timezone) {
+      this.validateTimezone(req.timezone);
+    }
+    if (mappedFieldsToCheck.includes('blackout_dates') && req.blackout_dates) {
+      this.validateBlackoutDates(req.blackout_dates);
+    }
+    const updatePayload: Record<string, any> = {};
+
+    updatedFields.forEach((field) => {
+      const dbColumn = getDbField(field);
+      
+      let value = (req as any)[dbColumn];
+
+      if (dbColumn === 'working_hours' || dbColumn === 'blackout_dates') {
+         value = value ?? []; 
+      }
+
+      updatePayload[dbColumn] = value;
+    });
 
     const now = new Date();
-    req.updated_at = now;
-    mappedFields.push("updated_at");
-    
-    const setClauses = mappedFields.map((field, index) => `${field} = $${index + 3}`);
-    const query = `
-      UPDATE organizer_settings
-      SET ${setClauses.join(", ")}
-      WHERE organizer_id = $1 AND organizer_id = (
-        SELECT id FROM organizer WHERE user_id = $2
-      )
-      RETURNING 
-        organizer_id, 
-        meeting_duration_minutes, 
-        buffer_before_minutes,
-        buffer_after_minutes,
-        minimum_notice_hours, 
-        timezone, 
-        working_hours, 
-        blackout_dates, 
-        created_at, 
-        updated_at
-    `;
+    updatePayload['updated_at'] = now;
 
-    const values = [req.organizer_id, userId];
-    for (const field of mappedFields) {
-      // if (field === "working_hours" || field === "blackout_dates") {
-      //   values.push(JSON.stringify((req as any)[field]));
-      // } else {
-      //   values.push((req as any)[field]);
-      // }
-       values.push((req as any)[field]);
-    }
+    let updatedRow: any = null;
 
-    const row = await DBService.queryRow<any>(query, ...values);
+    await this.db.commit(null, async (tx) => {      
+      const rows = await tx`
+        UPDATE organizer_settings
+        SET ${tx(updatePayload)} 
+        WHERE organizer_id = ${req.organizer_id} 
+        AND organizer_id = (
+          SELECT id FROM organizer WHERE user_id = ${userId}
+        )
+        RETURNING 
+          organizer_id, 
+          meeting_duration_minutes, 
+          buffer_before_minutes,
+          buffer_after_minutes,
+          minimum_notice_hours, 
+          timezone, 
+          working_hours, 
+          blackout_dates, 
+          created_at, 
+          updated_at
+      `;
 
-    if (!row) {
+      updatedRow = rows[0];
+    });
+
+    if (!updatedRow) {
       throw new Error("Organizer settings not found or unauthorized");
     }
 
-    return this.mapRowToSettings(row);
+    return this.mapRowToSettings(updatedRow);
   }
 
   private mapRowToSettings(row: any): OrganizerSettings {

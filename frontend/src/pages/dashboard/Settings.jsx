@@ -101,6 +101,10 @@ const handleSubmit = async (e) => {
             setHasSettings(true);
         }
         setMessage({ type: 'success', text: 'Settings saved successfully!' });
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
     } catch (err) {
         console.error(err);
         setMessage({ type: 'error', text: 'Failed to save settings.' });

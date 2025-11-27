@@ -36,10 +36,25 @@ export function Bookings() {
                 const organizer = await organizerService.getOrganizerByUserId(userId);
                 const organizerId = organizer.data.id;
 
-                console.log("Fetching bookings for organizer:", organizerId);
+                let apiFilters = [];
+                
+                switch (filter) {
+                    case "upcoming":
+                        apiFilters = ["ended_at:gt:now", "status:neq:cancelled"];
+                        break;
+                    case "past":
+                        apiFilters = ["ended_at:lte:now"];
+                        break;
+                    case "cancelled":
+                        apiFilters = ["status:eq:cancelled"];
+                        break;
+                    default:
+                        break;
+                }
 
                 const res = await bookingService.getListBooking(organizerId, {
-                    page: { limit: 100, offset: 0 }
+                    page: { limit: 20, offset: 0 },
+                    filter: apiFilters 
                 });
 
                 const list = res.data || res;
@@ -62,34 +77,19 @@ export function Bookings() {
         };
 
         fetchBookings();
-    }, []);
-
-    const filteredBookings = bookings.filter((b) => {
-        if (filter === "upcoming") return b.status === "confirmed";
-        if (filter === "cancelled") return b.status === "cancelled";
-        if (filter === "past")
-            return new Date(b.end_time) < new Date() && b.status !== "cancelled";
-        return true;
-    });
+    }, [filter]); 
 
     const handleCancel = async (id) => {
         if (!confirm("Are you sure you want to cancel this booking?")) return;
 
         try {
             await bookingService.cancelBooking(id);
-            setBookings(prev =>
-                prev.map(b =>
-                    b.id === id ? { ...b, status: "cancelled" } : b
-                )
-            );
+            setBookings(prev => prev.filter(b => b.id !== id));
+            
         } catch (error) {
             console.error("Cancel failed:", error);
         }
     };
-
-    if (loading) {
-        return <div className="empty-state">Loading bookings...</div>;
-    }
 
     return (
         <div className="dashboard-page">
@@ -119,10 +119,12 @@ export function Bookings() {
             </header>
 
             <div className="bookings-list">
-                {filteredBookings.length === 0 ? (
+                {loading ? (
+                     <div className="empty-state">Loading bookings...</div>
+                ) : bookings.length === 0 ? (
                     <div className="empty-state">No {filter} bookings found.</div>
                 ) : (
-                    filteredBookings.map((booking) => (
+                    bookings.map((booking) => (
                         <div key={booking.id} className="booking-card">
                             <div className="booking-info">
                                 <div className="booking-date">
@@ -146,7 +148,7 @@ export function Bookings() {
                             </div>
 
                             <div className="booking-actions">
-                                {booking.status === "confirmed" && (
+                                {filter === "upcoming" && booking.status !== "cancelled" && (
                                     <Button
                                         variant="outline"
                                         className="btn-cancel"
@@ -155,7 +157,7 @@ export function Bookings() {
                                     >
                                         Cancel
                                     </Button>
-                                    )}
+                                )}
                             </div>
                         </div>
                     ))

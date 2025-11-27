@@ -30,7 +30,6 @@ export const bookingService = {
     return response.data;
   },
 
-
   getPublicBookingDetail: async (bookingId) => {
     const response = await axiosClient.get(`/public-booking/bookings/${bookingId}`);
     return response.data;
@@ -51,7 +50,26 @@ export const bookingService = {
 
   getListBooking: async (organizerId, filterData) => {
     const response = await axiosClient.get(`/booking/list-booking/${organizerId}`, {
-      params: filterData
+      params: filterData,
+      paramsSerializer: (params) => {
+        const searchParams = new URLSearchParams();
+        
+        Object.keys(params).forEach(key => {
+          const value = params[key];
+          
+          if (Array.isArray(value)) {
+            value.forEach(val => searchParams.append(key, val));
+          } else if (typeof value === 'object' && value !== null) {
+            Object.keys(value).forEach(subKey => {
+              searchParams.append(`${key}[${subKey}]`, value[subKey]);
+            });
+          } else if (value !== undefined && value !== null) {
+            searchParams.append(key, value);
+          }
+        });
+
+        return searchParams.toString();
+      }
     });
     return response.data;
   },

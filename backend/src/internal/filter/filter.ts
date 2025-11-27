@@ -40,7 +40,6 @@ export function getFilters(query: Record<string, string | string[]>): Filter[] {
   return res;
 }
 
-
 export function composeDbQueryFromFilters(filters: Filter[], args: any[]): { sql: string; args: any[] } {
   const sb: string[] = [];
 

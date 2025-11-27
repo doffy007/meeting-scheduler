@@ -21,16 +21,17 @@ export default function Register() {
         phone_number: "",
         location: "",
         nationality: "Indonesian",
-        national_id_number: "",
+        national_id_number: "", 
         language: "id",
         birthdate: "",
     });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: value === undefined ? "" : value
         }));
     };
 
@@ -41,7 +42,6 @@ export default function Register() {
 
         try {
             await authService.register(formData);
-            // Gunakan alert browser standar atau custom toast
             alert("Registrasi Berhasil! Silakan Login.");
             navigate("/login");
         } catch (err) {
@@ -74,7 +74,7 @@ export default function Register() {
                         label="Username"
                         name="username"
                         placeholder="username"
-                        value={formData.username}
+                        value={formData.username ?? ""}
                         onChange={handleChange}
                         required
                     />
@@ -83,7 +83,7 @@ export default function Register() {
                         name="email"
                         type="email"
                         placeholder="email@example.com"
-                        value={formData.email}
+                        value={formData.email ?? ""}
                         onChange={handleChange}
                         required
                     />
@@ -95,7 +95,7 @@ export default function Register() {
                         name="password"
                         type="password"
                         placeholder="••••••••"
-                        value={formData.password}
+                        value={formData.password ?? ""}
                         onChange={handleChange}
                         required
                     />
@@ -108,7 +108,7 @@ export default function Register() {
                         label="Full Name"
                         name="name"
                         placeholder="John Doe"
-                        value={formData.name}
+                        value={formData.name ?? ""}
                         onChange={handleChange}
                         required
                     />
@@ -117,7 +117,7 @@ export default function Register() {
                         <select 
                             className="form-select" 
                             name="gender" 
-                            value={formData.gender} 
+                            value={formData.gender ?? "male"} 
                             onChange={handleChange}
                         >
                             <option value="male">Male</option>
@@ -131,7 +131,7 @@ export default function Register() {
                         label="Birthdate"
                         name="birthdate"
                         type="date"
-                        value={formData.birthdate}
+                        value={formData.birthdate ?? ""}
                         onChange={handleChange}
                         required
                     />                  
@@ -141,14 +141,14 @@ export default function Register() {
                      <Input
                         label="Nationality"
                         name="nationality"
-                        value={formData.nationality}
+                        value={formData.nationality ?? ""}
                         onChange={handleChange}
                     />
                      <Input
                         label="Language"
                         name="language"
                         placeholder="id / en"
-                        value={formData.language}
+                        value={formData.language ?? ""}
                         onChange={handleChange}
                     />
                 </div>
@@ -159,7 +159,7 @@ export default function Register() {
                         <Input
                             label="Code"
                             name="country_code"
-                            value={formData.country_code}
+                            value={formData.country_code ?? ""}
                             onChange={handleChange}
                         />
                     </div>
@@ -168,7 +168,7 @@ export default function Register() {
                             label="Phone Number"
                             name="phone_number"
                             placeholder="8123456789"
-                            value={formData.phone_number}
+                            value={formData.phone_number ?? ""}
                             onChange={handleChange}
                         />
                     </div>
@@ -178,7 +178,7 @@ export default function Register() {
                     label="Location (City)"
                     name="location"
                     placeholder="Jakarta, Indonesia"
-                    value={formData.location}
+                    value={formData.location ?? ""}
                     onChange={handleChange}
                 />
 
@@ -189,7 +189,7 @@ export default function Register() {
                         style={{ height: '80px', resize: 'vertical', fontFamily: 'inherit' }}
                         name="bio"
                         placeholder="Tell us a bit about yourself..."
-                        value={formData.bio}
+                        value={formData.bio ?? ""}
                         onChange={handleChange}
                     />
                 </div>

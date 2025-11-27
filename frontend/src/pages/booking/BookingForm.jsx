@@ -74,12 +74,8 @@ const handleSubmit = async (e) => {
             invitee_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Jakarta'
         };
 
-        console.log('Submitting booking payload:', payload); 
-
         const res = await bookingService.createPublicBooking(organizerId, payload);
-        
-        console.log('Booking created successfully:', res); 
-        
+                
         if (onSuccess) {
             onSuccess(res);
         }
