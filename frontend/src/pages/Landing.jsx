@@ -31,16 +31,16 @@ export default function Landing() {
 
             switch (filterType) {
                 case "upcoming":
-                    apiFilters = ['start_time:gte:now', 'status:neq:cancelled'];
+                    apiFilters = ['ended_at:gte:now', 'status:neq:cancelled'];
                     break;
                 case "past":
-                    apiFilters = ['start_time:lte:now', 'status:neq:cancelled'];
+                    apiFilters = ['ended_at:lte:now', 'status:neq:cancelled'];
                     break;
                 case "cancelled":
                      apiFilters = ['status:eq:cancelled'];
                      break;
                 default:
-                    apiFilters = ['start_time:gte:now', 'status:neq:cancelled'];
+                    apiFilters = ['ended_at:gte:now', 'status:neq:cancelled'];
                     break;
             }
 

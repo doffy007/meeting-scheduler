@@ -59,13 +59,14 @@ export function Bookings() {
                 switch (filter) {
                     case "upcoming":
                         apiFilters = [
-                            "ended_at:gt:now",
+                            "ended_at:gte:now",
                             "status:neq:cancelled"
                         ];
                         break;
                     case "past":
                         apiFilters = [
-                            "ended_at:lte:now"
+                            "ended_at:lte:now",
+                            "status:neq:cancelled"
                         ];
                         break;
                     case "cancelled":

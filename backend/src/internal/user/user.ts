@@ -107,8 +107,6 @@ export function validateEmail(user: User): void {
     return;
   }
 
-  console.log("Validating email for user:", user.id);
-
   if (userConfig.suspiciousEmailDetectionEnable) {
     const parts = user.email.split("@");
     

@@ -94,17 +94,17 @@ export const OrganizerController = {
     }
   },
 
-    async ListOrganizer(c: Context) {
-      try {
-        const params = getParams(c.req.query());   
-        const bookings = await OrganizerService.listOrganizer(params);
-  
-        return c.json(bookings);
-  
-      } catch (err) {
-        return api.Abort(c, null, err);
-      }
-    },
+  async ListOrganizer(c: Context) {
+    try {
+      const params = getParams(c.req.queries());   
+      const bookings = await OrganizerService.listOrganizer(params);
+
+      return c.json(bookings);
+
+    } catch (err) {
+      return api.Abort(c, null, err);
+    }
+  },
   
 }
 

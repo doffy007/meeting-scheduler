@@ -259,50 +259,72 @@ class BookingServiceImpl implements IBookingService {
     const allowedColumns = [
       "id", "organizer_id", "user_id", "invitee_name", "invitee_email",
       "invitee_phone", "start_time", "end_time", "duration_minutes",
-      "status", "created_at", "updated_at", "cancelled_at"
+      "status", "created_at", "updated_at", "cancelled_at","ended_at"
     ];
 
-    // Process filters to handle special cases
-    let processedFilters: Filter[] = [];
+    const currentTimestamp = new Date().toISOString();
+
+    let processedFilters: Filter[] = [];    
+    
     if (params.filters) {
       const rawFilters = Array.isArray(params.filters) 
         ? params.filters 
         : [params.filters];
       
-      processedFilters = rawFilters.map((f) => {
-        const newF = { ...f };
-        
-        // Map frontend column names to database columns
-        if (newF.column === "ended_at") {
-          newF.column = "end_time";
+      processedFilters = rawFilters.map((f: any) => {
+        let filterObj: Filter | null = null;
+
+        if (typeof f === 'string') {
+            const parts = f.split(':');
+            const col = parts[0]?.trim();
+            const op = parts[1]?.trim();
+            const val = parts[2]?.trim();
+
+            if (parts.length === 3 && col && op && val) {
+                filterObj = {
+                    column: col,
+                    operator: op,
+                    value: val
+                };
+            } else {
+                console.warn("⚠️ Invalid filter format (skipped):", f);
+                return null;
+            }
+        } 
+        else if (typeof f === 'object' && f !== null) {
+            filterObj = { ...f };
+        }
+
+        if (!filterObj) return null;
+        if (filterObj.column === "ended_at") {
+            filterObj.column = "end_time";
         }
         
-        // Replace "now" with actual timestamp
-        if (newF.value === "now") {
-          newF.value = new Date().toISOString();
+        if (filterObj.value === "now") {
+            filterObj.value = currentTimestamp;
         }
         
-        return newF;
-      });
+        return filterObj;
+      }).filter((item): item is Filter => item !== null);
     }
 
     let sql = `
       SELECT 
-        id,
-        organizer_id,
-        user_id,
-        invitee_name,
+        id, 
+        organizer_id, 
+        user_id, 
+        invitee_name, 
         invitee_email,
-        invitee_phone,
-        invitee_notes,
-        start_time,
+        invitee_phone, 
+        invitee_notes, 
+        start_time, 
         end_time,
-        duration_minutes,
-        organizer_timezone,
+        duration_minutes, 
+        organizer_timezone, 
         invitee_timezone,
-        status,
-        created_at,
-        updated_at,
+        status, 
+        created_at, 
+        updated_at, 
         cancelled_at
       FROM booking
       WHERE organizer_id = $1
@@ -328,30 +350,22 @@ class BookingServiceImpl implements IBookingService {
       const validatedSorts = params.sorts.filter((s) =>
         allowedColumns.includes(s.column)
       );
-      
       if (validatedSorts.length > 0) {
         sql += ` ${composeSorts(validatedSorts)}`;
       }
     } else {
-      // Default sort
       sql += ` ORDER BY start_time ASC`;
     }
 
     const limit = params.page?.limit ?? 20;
     const offset = params.page?.offset ?? 0;
-    
     args.push(limit, offset);
     sql += ` LIMIT $${args.length - 1} OFFSET $${args.length}`;
 
     const rows = await this.db.query<Booking>(sql, ...args);
 
-    // Count query
     const countArgs: any[] = [organizerId];
-    let countSql = `
-      SELECT COUNT(*) as count 
-      FROM booking 
-      WHERE organizer_id = $1 
-    `;
+    let countSql = `SELECT COUNT(*) as count FROM booking WHERE organizer_id = $1`;
 
     const countFilterSql = composeDbQueryFromFilters(processedFilters, countArgs, {
       allowedColumns,
@@ -360,7 +374,7 @@ class BookingServiceImpl implements IBookingService {
     if (countFilterSql) {
       countSql += ` AND ${countFilterSql.replace("WHERE ", "")}`;
     }
-
+    
     if (params.search) {
       countArgs.push(`%${params.search}%`);
       countSql += ` AND (
@@ -369,17 +383,12 @@ class BookingServiceImpl implements IBookingService {
       )`;
     }
 
-    const countRows = await this.db.query<{ count: string }>(
-      countSql,
-      ...countArgs
-    );
+    const countRows = await this.db.query<{ count: string }>(countSql, ...countArgs);
     const total = parseInt(countRows[0]?.count ?? "0");
 
-    // Get organizer timezone for conversion
     const settings = await OrganizerSettingsService.getOrganizerSetting(organizerId);
     const tz = settings?.timezone || "UTC";
 
-    // Convert timestamps to organizer timezone
     const convertedRows = rows.map(b => ({
       ...b,
       start_time: convertToTimezone(b.start_time ?? new Date(), tz),
@@ -429,12 +438,10 @@ class BookingServiceImpl implements IBookingService {
       processedFilters = rawFilters.map((f) => {
         const newF = { ...f };
         
-        // Map frontend column names to database columns
         if (newF.column === "ended_at") {
           newF.column = "end_time";
         }
         
-        // Replace "now" with actual timestamp
         if (newF.value === "now") {
           newF.value = new Date().toISOString();
         }

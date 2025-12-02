@@ -61,6 +61,8 @@ export function getFilters(query: Record<string, string | string[]>): Filter[] {
   const filters = Array.isArray(fs) ? fs : [fs];
 
   for (const f of filters) {
+    if (typeof f !== 'string') continue;
+
     const parts = f.split(":");
     
     if (parts.length !== 3) {
@@ -68,7 +70,9 @@ export function getFilters(query: Record<string, string | string[]>): Filter[] {
       continue;
     }
 
-    const [column, operator, value] = parts;
+    const column = parts[0]?.trim();
+    const operator = parts[1]?.trim();
+    const value = parts[2]?.trim();
 
     if (!column || !operator || !value) {
       console.warn(`[Filter] Empty column, operator, or value: ${f}`);

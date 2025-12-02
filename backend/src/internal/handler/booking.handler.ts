@@ -83,7 +83,10 @@ export const BookingController = {
 
   async listBookings(c: Context) {
     try {
-      const params = getParams(c.req.query());
+      const rawQuery = c.req.queries(); 
+      
+      const params = getParams(rawQuery);
+
       const organizerId = api.GetStringUUIDParam(c, "organizerId", true);
 
       const bookings = await BookingService.listBookings(organizerId, params);

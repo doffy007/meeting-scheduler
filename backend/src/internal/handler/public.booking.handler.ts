@@ -130,58 +130,59 @@ export const PublicBookingController = {
         }
     },
 
-        async publicListBookings(c: Context) {
-          try {
-            const params = getParams(c.req.query());   
-            const bookings = await BookingService.publicListBookings(params);
+  async publicListBookings(c: Context) {
+    try {
+      const params = getParams(c.req.queries());   
       
-            return c.json(bookings);
-      
-          } catch (err) {
-            return api.Abort(c, null, err);
-          }
-        },
+      const bookings = await BookingService.publicListBookings(params);
 
-        async rescheduleBooking(c: Context) {
-            try {
-              const body = await c.req.json();
-              const bookingId = api.GetStringUUIDParam(c, "bookingId", true);
-        
-              const existing = await BookingService.getBooking(bookingId);
-              if (!existing) {
-                throw new BookingNotFoundError();
-              }
-        
-              const newStartTime = new Date(body.new_start_time);
-              if (isNaN(newStartTime.getTime())) {
-                throw new InvalidTimeSlotError("Invalid date format for new_start_time");
-              }
-        
-              const updatedBooking = await BookingService.rescheduleBooking(bookingId, newStartTime);
-        
-              return c.json(updatedBooking);
-        
-            } catch (err) {
-              return api.Abort(c, null, err);
-            }
-        },
+      return c.json(bookings);
 
-        async cancelBooking(c: Context) {
-              try {
-                const bookingId = api.GetStringUUIDParam(c, 'bookingId', true);          
-                const existing = await BookingService.getBooking(bookingId);
-                if (!existing) {
-                  throw new BookingNotFoundError();
-                }
-          
-                await BookingService.cancelBooking(bookingId);
-          
-                return c.json({ message: "Booking cancelled successfully" });
-          
-              } catch (err) {
-                return api.Abort(c, null, err);
-              }
+    } catch (err) {
+      return api.Abort(c, null, err);
+    }
+  },
+
+  async rescheduleBooking(c: Context) {
+      try {
+        const body = await c.req.json();
+        const bookingId = api.GetStringUUIDParam(c, "bookingId", true);
+  
+        const existing = await BookingService.getBooking(bookingId);
+        if (!existing) {
+          throw new BookingNotFoundError();
         }
+  
+        const newStartTime = new Date(body.new_start_time);
+        if (isNaN(newStartTime.getTime())) {
+          throw new InvalidTimeSlotError("Invalid date format for new_start_time");
+        }
+  
+        const updatedBooking = await BookingService.rescheduleBooking(bookingId, newStartTime);
+  
+        return c.json(updatedBooking);
+  
+      } catch (err) {
+        return api.Abort(c, null, err);
+      }
+  },
+
+  async cancelBooking(c: Context) {
+        try {
+          const bookingId = api.GetStringUUIDParam(c, 'bookingId', true);          
+          const existing = await BookingService.getBooking(bookingId);
+          if (!existing) {
+            throw new BookingNotFoundError();
+          }
+    
+          await BookingService.cancelBooking(bookingId);
+    
+          return c.json({ message: "Booking cancelled successfully" });
+    
+        } catch (err) {
+          return api.Abort(c, null, err);
+        }
+  }
 }
 
 export default PublicBookingController;
