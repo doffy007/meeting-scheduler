@@ -11,7 +11,7 @@ Minimal online meeting scheduler, backend pakai **Bun + TypeScript**, frontend p
 ```bash
 cd backend
 bun install
-bun run index.ts
+bun run dev
 ```
 
 * Server default: `http://localhost:8080`.
