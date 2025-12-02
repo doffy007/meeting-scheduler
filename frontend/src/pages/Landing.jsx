@@ -10,6 +10,8 @@ import '../styles/Landing.css';
 export default function Landing() {
     const [organizers, setOrganizers] = useState([]);
     const [bookings, setBookings] = useState([]);
+    const [totalOrganizers, setTotalOrganizers] = useState(0);
+    const [totalBookings, setTotalBookings] = useState(0);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -22,28 +24,59 @@ export default function Landing() {
     
     const [loadingAction, setLoadingAction] = useState(false);
 
-    const fetchData = async (filter = '') => {
+    const fetchData = async (search = '', filterType = 'upcoming') => {
         setLoading(true);
         try {
-            const [orgData, bookingData] = await Promise.all([
-                organizerService.getPublicOrganizers(filter),
-                bookingService.getPublicBooking(filter)
+            let apiFilters = [];
+
+            switch (filterType) {
+                case "upcoming":
+                    apiFilters = ['start_time:gte:now', 'status:neq:cancelled'];
+                    break;
+                case "past":
+                    apiFilters = ['start_time:lte:now', 'status:neq:cancelled'];
+                    break;
+                case "cancelled":
+                     apiFilters = ['status:eq:cancelled'];
+                     break;
+                default:
+                    apiFilters = ['start_time:gte:now', 'status:neq:cancelled'];
+                    break;
+            }
+
+            const [orgResponse, bookingResponse] = await Promise.all([
+                organizerService.getPublicOrganizers(search),
+                
+                bookingService.getPublicBooking(search, {
+                    filter: apiFilters 
+                })
             ]);
 
-            setOrganizers(Array.isArray(orgData) ? orgData : (orgData.data || []));
-            setBookings(Array.isArray(bookingData) ? bookingData : (bookingData.data || []));
+            const orgData = orgResponse?.results || orgResponse?.data || [];
+            const orgTotal = orgResponse?.total || 0;
+            
+            const bookingData = bookingResponse?.results || bookingResponse?.data || [];
+            const bookingTotal = bookingResponse?.total || 0;
+
+            setOrganizers(Array.isArray(orgData) ? orgData : []);
+            setTotalOrganizers(orgTotal);
+            
+            setBookings(Array.isArray(bookingData) ? bookingData : []);
+            setTotalBookings(bookingTotal);
 
         } catch (error) {
-            console.error("Gagal mengambil data public", error);
+            console.error("Failed to fetch public data", error);
             setOrganizers([]);
             setBookings([]);
+            setTotalOrganizers(0);
+            setTotalBookings(0);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchData();
+        fetchData(); 
     }, []);
 
     const handleSearch = (e) => {
@@ -66,7 +99,12 @@ export default function Landing() {
     };
 
     const closeReschedule = () => {
-        setRescheduleModal({ open: false, bookingId: null, organizerId: null, newDate: null });
+        setRescheduleModal({ 
+            open: false, 
+            bookingId: null, 
+            organizerId: null, 
+            newDate: null 
+        });
     };
 
     const handleDateSelected = (dateObj) => {
@@ -78,15 +116,16 @@ export default function Landing() {
 
         setLoadingAction(true);
         try {
-            await bookingService.publicReschedulBookingDetail(rescheduleModal.bookingId, {
-                new_start_time: rescheduleModal.newDate.start
-            });
+            await bookingService.publicReschedulBookingDetail(
+                rescheduleModal.bookingId, 
+                { new_start_time: rescheduleModal.newDate.start }
+            );
 
             closeReschedule();
-            fetchData();
+            fetchData(searchTerm);
         } catch (err) {
             console.error("Failed to reschedule", err);
-            alert("Gagal melakukan reschedule. Silakan coba lagi.");
+            alert("Failed to reschedule. Please try again.");
         } finally {
             setLoadingAction(false);
         }
@@ -94,15 +133,35 @@ export default function Landing() {
 
     const handleCancel = async (bookingId) => {
         if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+        
         setLoadingAction(true);
         try {
             await bookingService.publicCancelBooking(bookingId);
-            fetchData();
+            fetchData(searchTerm);
         } catch (err) {
             console.error("Failed to cancel booking", err);
+            alert("Failed to cancel booking. Please try again.");
         } finally {
             setLoadingAction(false);
         }
+    };
+
+    const formatDateTime = (isoString) => {
+        const localDate = new Date(isoString);
+        
+        const dateStr = localDate.toLocaleDateString('en-US', { 
+            day: 'numeric', 
+            month: 'short', 
+            year: 'numeric' 
+        });
+        
+        const timeStr = localDate.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+        });
+
+        return { dateStr, timeStr };
     };
 
     return (
@@ -113,20 +172,46 @@ export default function Landing() {
                     <p className="page-subtitle">
                         Search for public organizers and book a time slot easily.
                     </p>
+                    
                     <form onSubmit={handleSearch} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                         <div style={{
-                            display: 'flex', alignItems: 'center', backgroundColor: 'white',
-                            border: '1px solid #e5e7eb', borderRadius: '100px', padding: '6px', 
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.05)', height: '60px',
-                            width: '100%', maxWidth: '550px'
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb', 
+                            borderRadius: '100px', 
+                            padding: '6px', 
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.05)', 
+                            height: '60px',
+                            width: '100%', 
+                            maxWidth: '550px'
                         }}>
                             <Search size={20} color="#9ca3af" style={{ marginLeft: '16px', marginRight: '10px' }} />
                             <input 
-                                type="text" placeholder="Search name or event..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ flex: 1, border: 'none', outline: 'none', fontSize: '1rem', color: '#111', background: 'transparent' }}
+                                type="text" 
+                                placeholder="Search name or event..." 
+                                value={searchTerm} 
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{ 
+                                    flex: 1, 
+                                    border: 'none', 
+                                    outline: 'none', 
+                                    fontSize: '1rem', 
+                                    color: '#111', 
+                                    background: 'transparent' 
+                                }}
                             />
                             {searchTerm && (
-                                <button type="button" onClick={handleClear} style={{ background:'none', border:'none', cursor:'pointer', marginRight:'15px' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={handleClear} 
+                                    style={{ 
+                                        background: 'none', 
+                                        border: 'none', 
+                                        cursor: 'pointer', 
+                                        marginRight: '15px' 
+                                    }}
+                                >
                                     <SearchX size={20} color="#ef4444" />
                                 </button>
                             )}
@@ -135,67 +220,92 @@ export default function Landing() {
                 </div>
 
                 {loading ? (
-                    <div className="loading-state"><Loader className="animate-spin" size={32} /><p style={{marginTop: '10px'}}>Searching...</p></div>
+                    <div className="loading-state">
+                        <Loader className="animate-spin" size={32} />
+                        <p style={{ marginTop: '10px' }}>Searching...</p>
+                    </div>
                 ) : (
                     <>
+                        {/* Public Organizers Section */}
                         <div className="section-wrapper">
                             <div className="section-title-row">
-                                <h2><User size={24} className="icon-blue"/> Public Organizers</h2>
-                                <span className="count-badge">{organizers.length}</span>
+                                <h2>
+                                    <User size={24} className="icon-blue" /> Public Organizers
+                                </h2>
+                                <span className="count-badge">{totalOrganizers}</span>
                             </div>
+                            
                             {organizers.length > 0 ? (
                                 <div className="organizers-grid">
                                     {organizers.map((org) => (
                                         <div key={org.id} className="organizer-card">
                                             <div className="card-header">
-                                                <div className="org-avatar"><User size={28} /></div>
-                                                <div className="org-identity"><h3>{org.name || 'Organizer'}</h3><span className="org-email">{org.email}</span></div>
+                                                <div className="org-avatar">
+                                                    <User size={28} />
+                                                </div>
+                                                <div className="org-identity">
+                                                    <h3>{org.name || 'Organizer'}</h3>
+                                                    <span className="org-email">{org.email}</span>
+                                                </div>
                                             </div>
+                                            
                                             <div className="card-body">
-                                                <div className="info-item"><Clock size={16} /><span>{org.meeting_duration_minutes || 30} mins</span></div>
-                                                <div className="info-item"><MapPin size={16} /><span>{org.timezone || 'UTC'}</span></div>
+                                                <div className="info-item">
+                                                    <Clock size={16} />
+                                                    <span>{org.meeting_duration_minutes || 30} mins</span>
+                                                </div>
+                                                <div className="info-item">
+                                                    <MapPin size={16} />
+                                                    <span>{org.timezone || 'UTC'}</span>
+                                                </div>
                                             </div>
+                                            
                                             <div className="card-footer">
-                                                <Link to={`/public-organizer/${org.id}`} className="book-btn">Book Meeting <ArrowRight size={16} /></Link>
+                                                <Link 
+                                                    to={`/public-organizer/${org.id}`} 
+                                                    className="book-btn"
+                                                >
+                                                    Book Meeting <ArrowRight size={16} />
+                                                </Link>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            ) : <p className="empty-text">No organizers found.</p>}
+                            ) : (
+                                <p className="empty-text">No organizers found.</p>
+                            )}
                         </div>
 
                         <div className="section-divider"></div>
 
+                        {/* Available Bookings Section */}
                         <div className="section-wrapper">
                             <div className="section-title-row">
-                                <h2><Sparkles size={24} className="icon-purple"/> Available Bookings</h2>
-                                <span className="count-badge">{bookings.length}</span>
+                                <h2>
+                                    <Sparkles size={24} className="icon-purple" /> Available Bookings
+                                </h2>
+                                <span className="count-badge">{totalBookings}</span>
                             </div>
+                            
                             {bookings.length > 0 ? (
                                 <div className="organizers-grid">
                                     {bookings.map((event) => {
-                                       const localDate = new Date(event.start_time);
-
-                                        const dateStr = localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-                                        const timeStr = localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
-                                        const offsetMinutes = localDate.getTimezoneOffset();
-                                        const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
-                                        const offsetMins = Math.abs(offsetMinutes) % 60;
-                                        const sign = offsetMinutes <= 0 ? '+' : '-';
-                                        const gmtOffset = `GMT${sign}${String(offsetHours).padStart(2,'0')}:${String(offsetMins).padStart(2,'0')}`;
+                                        const { dateStr, timeStr } = formatDateTime(event.start_time);
 
                                         return (
                                             <div key={event.id} className="organizer-card event-card-style">
                                                 <div className="card-header">
-                                                    <div className="event-icon-bg"><Calendar size={24} /></div>
+                                                    <div className="event-icon-bg">
+                                                        <Calendar size={24} />
+                                                    </div>
                                                     <div className="org-identity">
                                                         <h3>{event.invitee_notes || 'Session'}</h3>
                                                         <span className="hosted-by" style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                                                            {dateStr} • {timeStr} • {gmtOffset}
+                                                            {dateStr} • {timeStr}
                                                         </span>
                                                     </div>
                                                 </div>
+                                                
                                                 <div className="card-body">
                                                     <p className="event-desc" style={{ marginBottom: '12px', color: '#374151' }}>
                                                         <strong>Guest:</strong> {event.invitee_name}
@@ -206,12 +316,20 @@ export default function Landing() {
                                                             {event.duration_minutes} mins • {event.status}
                                                         </span>
                                                     </div>
+                                                    <div className="info-item">
+                                                        <MapPin size={16} />
+                                                        <span>{event.organizer_timezone}</span>
+                                                    </div>
                                                 </div>
                                                 
                                                 <div className="card-footer" style={{ display: 'flex', gap: '10px' }}>
                                                     <button 
                                                         className="btn-primary" 
-                                                        style={{ justifyContent:'center', cursor:'pointer' }}
+                                                        style={{ 
+                                                            justifyContent: 'center', 
+                                                            cursor: 'pointer',
+                                                            flex: 1
+                                                        }}
                                                         onClick={() => openReschedule(event.id, event.organizer_id)}
                                                         disabled={loadingAction}
                                                     >
@@ -220,8 +338,12 @@ export default function Landing() {
                                                     <button 
                                                         className="btn-danger" 
                                                         style={{
-                                                            justifyContent:'center', cursor:'pointer',
-                                                            background:'#fee2e2', color:'#ef4444', border:'1px solid #fecaca'
+                                                            justifyContent: 'center', 
+                                                            cursor: 'pointer',
+                                                            background: '#fee2e2', 
+                                                            color: '#ef4444', 
+                                                            border: '1px solid #fecaca',
+                                                            flex: 1
                                                         }}
                                                         onClick={() => handleCancel(event.id)}
                                                         disabled={loadingAction}
@@ -233,40 +355,72 @@ export default function Landing() {
                                         );
                                     })}
                                 </div>
-                            ) : <p className="empty-text">No available bookings found.</p>}
+                            ) : (
+                                <p className="empty-text">No available bookings found.</p>
+                            )}
                         </div>
 
+                        {/* Reschedule Modal */}
                         {rescheduleModal.open && (
                             <div
                                 className="modal-backdrop"
                                 onClick={closeReschedule}
                                 style={{
-                                    position: 'fixed', inset: 0, zIndex: 999,
-                                    background: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(2px)',
-                                    display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px',
+                                    position: 'fixed', 
+                                    inset: 0, 
+                                    zIndex: 999,
+                                    background: 'rgba(0, 0, 0, 0.5)', 
+                                    backdropFilter: 'blur(2px)',
+                                    display: 'flex', 
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                    padding: '20px',
                                 }}
                             >
                                 <div
                                     className="modal-content"
                                     onClick={(e) => e.stopPropagation()}
                                     style={{
-                                        background: 'white', borderRadius: '20px',
-                                        width: '100%', maxWidth: '900px', 
-                                        maxHeight: '90vh', display: 'flex', flexDirection: 'column',
-                                        overflow: 'hidden', animation: 'fadeIn 0.2s ease-out'
+                                        background: 'white', 
+                                        borderRadius: '20px',
+                                        width: '100%', 
+                                        maxWidth: '900px', 
+                                        maxHeight: '90vh', 
+                                        display: 'flex', 
+                                        flexDirection: 'column',
+                                        overflow: 'hidden', 
+                                        animation: 'fadeIn 0.2s ease-out'
                                     }}
                                 >
                                     <div style={{ 
-                                        padding: '16px 24px', borderBottom: '1px solid #f3f4f6',
-                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                        padding: '16px 24px', 
+                                        borderBottom: '1px solid #f3f4f6',
+                                        display: 'flex', 
+                                        justifyContent: 'space-between', 
+                                        alignItems: 'center'
                                     }}>
-                                        <h3 style={{ margin: 0, fontSize: '1.125rem', color: '#111827' }}>Reschedule Booking</h3>
-                                        <button onClick={closeReschedule} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width:'32px', height:'32px', display:'flex', alignItems:'center', justifyContent:'center', cursor: 'pointer' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.125rem', color: '#111827' }}>
+                                            Reschedule Booking
+                                        </h3>
+                                        <button 
+                                            onClick={closeReschedule} 
+                                            style={{ 
+                                                background: '#f3f4f6', 
+                                                border: 'none', 
+                                                borderRadius: '50%', 
+                                                width: '32px', 
+                                                height: '32px', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center', 
+                                                cursor: 'pointer' 
+                                            }}
+                                        >
                                             <X size={18} />
                                         </button>
                                     </div>
 
-                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                    <div style={{ flex: 1, overflow: 'auto' }}>
                                         <DateSelection 
                                             organizerId={rescheduleModal.organizerId} 
                                             onSelectSlot={handleDateSelected} 
@@ -275,18 +429,37 @@ export default function Landing() {
                                     </div>
 
                                     <div style={{ 
-                                        padding: '16px 24px', borderTop: '1px solid #f3f4f6',
-                                        display: 'flex', justifyContent: 'flex-end', gap: '12px', background: 'white'
+                                        padding: '16px 24px', 
+                                        borderTop: '1px solid #f3f4f6',
+                                        display: 'flex', 
+                                        justifyContent: 'flex-end', 
+                                        gap: '12px', 
+                                        background: 'white'
                                     }}>
-                                        <button onClick={closeReschedule} style={{ padding: '10px 20px', borderRadius: '8px', background: 'white', border: '1px solid #d1d5db', color: '#374151', fontWeight: '500', cursor: 'pointer' }}>
+                                        <button 
+                                            onClick={closeReschedule} 
+                                            style={{ 
+                                                padding: '10px 20px', 
+                                                borderRadius: '8px', 
+                                                background: 'white', 
+                                                border: '1px solid #d1d5db', 
+                                                color: '#374151', 
+                                                fontWeight: '500', 
+                                                cursor: 'pointer' 
+                                            }}
+                                        >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={handleRescheduleConfirm}
                                             disabled={loadingAction || !rescheduleModal.newDate}
                                             style={{
-                                                padding: '10px 24px', borderRadius: '8px',
-                                                background: '#1e293b', border: 'none', color: 'white', fontWeight: '600',
+                                                padding: '10px 24px', 
+                                                borderRadius: '8px',
+                                                background: '#1e293b', 
+                                                border: 'none', 
+                                                color: 'white', 
+                                                fontWeight: '600',
                                                 cursor: (loadingAction || !rescheduleModal.newDate) ? 'not-allowed' : 'pointer',
                                                 opacity: (loadingAction || !rescheduleModal.newDate) ? 0.6 : 1
                                             }}

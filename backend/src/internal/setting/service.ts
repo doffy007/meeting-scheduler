@@ -93,7 +93,7 @@ async createOrganizerSettings(req: OrganizerSettings): Promise<OrganizerSettings
 
     let createdRow: any = null;
 
-    await this.db.commit(null, async (tx) => {
+    await this.db.transaction(null, async (tx) => {
       const rows = await tx`
         INSERT INTO organizer_settings (
           organizer_id, 
@@ -208,7 +208,7 @@ async createOrganizerSettings(req: OrganizerSettings): Promise<OrganizerSettings
 
     let updatedRow: any = null;
 
-    await this.db.commit(null, async (tx) => {      
+    await this.db.transaction(null, async (tx) => {      
       const rows = await tx`
         UPDATE organizer_settings
         SET ${tx(updatePayload)} 

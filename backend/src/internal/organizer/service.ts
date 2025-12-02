@@ -5,13 +5,14 @@ import { Service as UIDService } from "../uid";
 import  type { Organizer } from "./organizer.js";
 import { composeDbQueryFromFilters } from "../filter/filter";
 import { composeSorts } from "../filter/sort";
+import { FormatResponse, type APIResponse } from "../api/util.js";
 
 export interface IOrganizerService {
     createOrganizer(req: Organizer): Promise<Organizer>;
     updateOrganizer(req: Organizer, updatedFields: string[], userId: string): Promise<Organizer>;
     getOrganizer(id: string): Promise<Organizer | null>;
     getOrganizerByUserId(userId: string): Promise<Organizer | null>;  
-    listOrganizer(params: Params): Promise<Organizer[]>;
+    listOrganizer(params: Params): Promise<APIResponse<Organizer[]>>;
 }   
 
 class OrganizerService implements IOrganizerService {
@@ -29,7 +30,7 @@ class OrganizerService implements IOrganizerService {
     req.created_at = now;
     req.updated_at = now;
 
-    await this.db.commit(null, async (tx) => {
+    await this.db.transaction(null, async (tx) => {
       await tx`
         INSERT INTO organizer (
           id, 
@@ -114,13 +115,19 @@ class OrganizerService implements IOrganizerService {
     return row;
   } 
 
-  async listOrganizer(params: Params): Promise<Organizer[]> {
+  async listOrganizer(params: Params): Promise<APIResponse<Organizer[]>> {
     const args: any[] = [];
+    
+    const allowedColumns = [
+      "id", "user_id", "name", "email", "phone", "address",
+      "created_at", "updated_at"
+    ];
+
     let sql = `
       SELECT 
-        a.id as organizer_id,
-        a.user_id ,
-        a.name ,
+        a.id,
+        a.user_id,
+        a.name,
         a.email,
         a.phone,
         a.address,
@@ -135,44 +142,77 @@ class OrganizerService implements IOrganizerService {
         b.blackout_dates
       FROM organizer a
       LEFT JOIN organizer_settings b ON b.organizer_id = a.id
+      WHERE a.deleted_at IS NULL
     `;
 
-    const filterQuery = composeDbQueryFromFilters(params.filters, args);
-    sql += " " + filterQuery.sql;
+    const filterSql = composeDbQueryFromFilters(params.filters, args, {
+      allowedColumns,
+    });
+
+    if (filterSql) {
+      sql += ` AND ${filterSql.replace("WHERE ", "")}`;
+    }
 
     if (params.search) {
       args.push(`%${params.search}%`);
-      sql += (filterQuery.sql ? " AND " : " WHERE ") + `a.name ILIKE $${args.length}`;
+      sql += ` AND (
+        a.name ILIKE $${args.length} OR 
+        a.email ILIKE $${args.length}
+      )`;
     }
 
     if (params.sorts?.length) {
-      const sortSql = composeSorts(params.sorts); 
-      sql += ` ${sortSql}`;
+      const validatedSorts = params.sorts.filter((s) =>
+        allowedColumns.includes(s.column)
+      );
+      
+      if (validatedSorts.length > 0) {
+        const prefixedSorts = validatedSorts.map(s => ({
+          ...s,
+          column: `a.${s.column}`
+        }));
+        sql += ` ${composeSorts(prefixedSorts)}`;
+      }
     }
 
     const limit = params.page?.limit ?? 20;
     const offset = params.page?.offset ?? 0;
-    sql += ` LIMIT ${limit} OFFSET ${offset}`;
+    
+    args.push(limit, offset);
+    sql += ` LIMIT $${args.length - 1} OFFSET $${args.length}`;
 
-    const rows = await DBService.query(sql, ...args);
-    return rows.map(r => ({
-      id: r.organizer_id,         
-      deleted_at: r.deleted_at ?? null, 
-      user_id: r.user_id,
-      name: r.organizer_name,
-      email: r.email,
-      phone: r.phone,
-      address: r.address,
-      created_at: r.created_at,
-      updated_at: r.updated_at,
-      meeting_duration_minutes: r.meeting_duration_minutes,
-      buffer_before_minutes: r.buffer_before_minutes,
-      buffer_after_minutes: r.buffer_after_minutes,
-      minimum_notice_hours: r.minimum_notice_hours,
-      working_hours: r.working_hours,
-      timezone: r.timezone,
-      blackout_dates: r.blackout_dates
-    }));
+    const rows = await DBService.query<Organizer>(sql, ...args);
+
+    const countArgs: any[] = [];
+    let countSql = `
+      SELECT COUNT(*) as count 
+      FROM organizer a 
+      WHERE a.deleted_at IS NULL
+    `;
+
+    const countFilterSql = composeDbQueryFromFilters(params.filters, countArgs, {
+      allowedColumns,
+    });
+
+    if (countFilterSql) {
+      countSql += ` AND ${countFilterSql.replace("WHERE ", "")}`;
+    }
+
+    if (params.search) {
+      countArgs.push(`%${params.search}%`);
+      countSql += ` AND (
+        a.name ILIKE $${countArgs.length} OR 
+        a.email ILIKE $${countArgs.length}
+      )`;
+    }
+
+    const countRows = await DBService.query<{ count: string }>(
+      countSql,
+      ...countArgs
+    );
+    const total = parseInt(countRows[0]?.count ?? "0");
+
+    return FormatResponse(rows, total);
   }
 }
 

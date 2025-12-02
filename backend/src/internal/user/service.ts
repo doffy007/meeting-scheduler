@@ -96,7 +96,7 @@ class UserServiceImpl implements IUserService {
 
     req.password = await hashPassword(req.password);
 
-    await this.db.commit(null, async (tx) => {
+    await this.db.transaction(null, async (tx) => {
       await tx`
         INSERT INTO "user" (
           id,
@@ -281,7 +281,7 @@ class UserServiceImpl implements IUserService {
         const idParamIndex = paramIndex++;
         args.push(req.id);
 
-        await this.db.commit(null, async (tx) => {
+        await this.db.transaction(null, async (tx) => {
             await tx
             `UPDATE "user"
             SET ${setClauses.join(", ")}
@@ -329,7 +329,7 @@ class UserServiceImpl implements IUserService {
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    await this.db.commit(null, async (tx) => {
+    await this.db.transaction(null, async (tx) => {
       await tx`
         UPDATE "user"
         SET deleted_at = ${new Date()},

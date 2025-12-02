@@ -1,7 +1,7 @@
 /* Layout Dasar */
 .landing-page {
     min-height: 100vh;
-    background-color: #f8fafc; /* Abu-abu sangat muda agar bersih */
+    background-color: #f8fafc; 
     padding-bottom: 80px;
     font-family: system-ui, -apple-system, sans-serif;
 }

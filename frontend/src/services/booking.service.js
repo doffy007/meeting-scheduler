@@ -14,12 +14,19 @@ export const bookingService = {
     return response.data;
   },
 
- getPublicBooking: async (filterString) => {
-    const params = {};
-    if (filterString) {
-      params.search = filterString;
+  getPublicBooking: async (searchString, options = {}) => {
+    const params = { ...options };
+    if (searchString) {
+      params.search = searchString;
     }
-    const response = await axiosClient.get('/public-booking/list', { params });
+
+    const response = await axiosClient.get('/public-booking/list', { 
+      params,
+      paramsSerializer: {
+        indexes: null 
+      }
+    });
+    
     return response.data;
   },
 
