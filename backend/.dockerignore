@@ -1,0 +1,16 @@
+node_modules
+bun.lockb
+npm-debug.log
+dist
+.git
+.gitignore
+.env
+.env.local
+.DS_Store
+README.md
+LICENSE.md
+.vscode
+.idea
+coverage
+.nyc_output
+.log

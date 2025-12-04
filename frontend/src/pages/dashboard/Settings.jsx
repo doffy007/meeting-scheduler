@@ -18,8 +18,79 @@ const DAYS = [
 ];
 
 const TIMEZONES = [
-    "Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura", "UTC",
-    "America/New_York", "Europe/London"
+    // Indonesia
+    "Asia/Jakarta",
+    "Asia/Makassar",
+    "Asia/Jayapura",
+    "Asia/Pontianak",
+    
+    // Asia Pacific
+    "Asia/Singapore",
+    "Asia/Kuala_Lumpur",
+    "Asia/Bangkok",
+    "Asia/Manila",
+    "Asia/Tokyo",
+    "Asia/Seoul",
+    "Asia/Hong_Kong",
+    "Asia/Shanghai",
+    "Asia/Taipei",
+    "Asia/Ho_Chi_Minh",
+    
+    // India & Middle East
+    "Asia/Kolkata",
+    "Asia/Dubai",
+    "Asia/Riyadh",
+    "Asia/Jerusalem",
+    
+    // Australia
+    "Australia/Sydney",
+    "Australia/Melbourne",
+    "Australia/Brisbane",
+    "Australia/Perth",
+    
+    // Europe
+    "Europe/London",
+    "Europe/Paris",
+    "Europe/Berlin",
+    "Europe/Amsterdam",
+    "Europe/Brussels",
+    "Europe/Madrid",
+    "Europe/Rome",
+    "Europe/Zurich",
+    "Europe/Vienna",
+    "Europe/Stockholm",
+    "Europe/Moscow",
+    "Europe/Istanbul",
+    
+    // Americas - North
+    "America/New_York",
+    "America/Chicago",
+    "America/Denver",
+    "America/Los_Angeles",
+    "America/Toronto",
+    "America/Vancouver",
+    "America/Mexico_City",
+    
+    // Americas - South
+    "America/Sao_Paulo",
+    "America/Buenos_Aires",
+    "America/Santiago",
+    "America/Lima",
+    "America/Bogota",
+    
+    // Africa
+    "Africa/Cairo",
+    "Africa/Lagos",
+    "Africa/Johannesburg",
+    "Africa/Nairobi",
+    
+    // Pacific
+    "Pacific/Auckland",
+    "Pacific/Fiji",
+    "Pacific/Honolulu",
+    
+    // UTC
+    "UTC",
 ];
 
 export function Settings() {

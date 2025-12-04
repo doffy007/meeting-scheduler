@@ -96,14 +96,16 @@ export default function DateSelection({ organizerId, onSelectSlot, isEmbedded = 
         <div className="slots-grid" style={isEmbedded ? { gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' } : {}}>
             {selectedDaySlots.map((slot, idx) => {
                 const slotInOrganizerTz = toZonedTime(new Date(slot.start), organizerTz);
-
-            
+                
+                const slotHour = slotInOrganizerTz.getHours();
+                const slotMinute = slotInOrganizerTz.getMinutes();
+                
                 const maxTimeStr = slot.organizer_max_time || "23:59"; 
                 const [maxH, maxM] = maxTimeStr.split(':').map(Number);
-                const maxDate = new Date(slotInOrganizerTz);
-                maxDate.setHours(maxH, maxM, 0, 0);
-
-                const isAfterMax = slotInOrganizerTz.getTime() > maxDate.getTime();
+                
+                const slotTimeInMinutes = slotHour * 60 + slotMinute;
+                const maxTimeInMinutes = maxH * 60 + maxM;
+                const isAfterMax = slotTimeInMinutes > maxTimeInMinutes;
 
                 const localDate = new Date(slot.start);
                 const timeLabel = localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });

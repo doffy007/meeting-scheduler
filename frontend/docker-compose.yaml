@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: .
+    container_name: meeting_frontend
+    ports:
+      - "${VITE_PORT}:${VITE_PORT}"   
+    volumes:
+      - .:/app                        
+    env_file:
+      - .env

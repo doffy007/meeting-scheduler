@@ -11,7 +11,7 @@ import config from "./internal/config";
 const app = new Hono();
 
 app.use('/*', cors({
-  origin: 'http://localhost:5173', 
+  origin: config.corsUrl, 
   allowHeaders: ['Content-Type', 'Authorization'], 
   allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
   exposeHeaders: ['Content-Length'],

@@ -9,6 +9,8 @@ const ConfigSchema = z.object({
   DATABASE_MAX_OPEN_CONNECTION: z.string().default("10"),
   DATABASE_MAX_IDLE_CONNECTION: z.string().default("5"),
   DATABASE_PING_INTERVAL: z.string().default("10"),
+
+  CORS_URL: z.string().default("http://localhost:5173")
 });
 
 type RawConfig = z.infer<typeof ConfigSchema>;
@@ -25,6 +27,7 @@ export interface Config {
   logLevel: string;
   port: number;
   database: DatabaseConfig;
+  corsUrl: string;
 }
 
 function loadConfig(): Config {
@@ -39,6 +42,7 @@ function loadConfig(): Config {
       DATABASE_MAX_IDLE_CONNECTION: raw.DATABASE_MAX_IDLE_CONNECTION,
       DATABASE_PING_INTERVAL: raw.DATABASE_PING_INTERVAL,
     },
+    corsUrl: raw.CORS_URL,
   };
 
   console.log("Config loaded:", {
